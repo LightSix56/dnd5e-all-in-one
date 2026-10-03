@@ -1,0 +1,2220 @@
+// D&D 5e Character Sheet — Types, Calculation Engine & Universal Level-Up System
+
+import { findWeaponByName } from '@/data/dnd-weapons';
+
+export const ABILITY_NAMES = ['СИЛ', 'ЛОВ', 'ТЕЛ', 'ИНТ', 'МДР', 'ХАР'] as const;
+export type AbilityName = typeof ABILITY_NAMES[number];
+
+export const ABILITY_FULL: Record<AbilityName, string> = {
+  'СИЛ': 'Сила',
+  'ЛОВ': 'Ловкость',
+  'ТЕЛ': 'Телосложение',
+  'ИНТ': 'Интеллект',
+  'МДР': 'Мудрость',
+  'ХАР': 'Харизма',
+};
+
+export const SKILL_MAP: Record<string, AbilityName> = {
+  'Акробатика': 'ЛОВ',
+  'Анализ': 'ИНТ',
+  'Атлетика': 'СИЛ',
+  'Внимательность': 'МДР',
+  'Выживание': 'МДР',
+  'Выступление': 'ХАР',
+  'Запугивание': 'ХАР',
+  'История': 'ИНТ',
+  'Ловкость рук': 'ЛОВ',
+  'Магия': 'ИНТ',
+  'Медицина': 'МДР',
+  'Обман': 'ХАР',
+  'Природа': 'ИНТ',
+  'Проницательность': 'МДР',
+  'Религия': 'ИНТ',
+  'Скрытность': 'ЛОВ',
+  'Убеждение': 'ХАР',
+  'Уход за животными': 'МДР',
+};
+
+export const ALL_SKILLS = Object.keys(SKILL_MAP);
+
+export interface Attack {
+  name: string;
+  attackBonus: string;
+  damageAndType: string;
+  ability?: AbilityName;
+  proficient?: boolean;
+  isProficient?: boolean;
+}
+
+export interface SpellSlotInfo {
+  totalSlots: number;
+  expendedSlots: number;
+}
+
+export interface SpellEntry {
+  name: string;
+  prepared: boolean;
+}
+
+// ── Level-up entry: structured data for all changes ──
+export interface TraitItem {
+  id: string;
+  name: string;
+  source?: string;
+  summary?: string;
+  description?: string;
+}
+
+export interface LevelUpEntry {
+  level: number;
+  hpGained: number;
+  asiAbilities: [AbilityName, AbilityName] | null; // which +1 each, or null if no ASI
+  notes: string;             // freeform: subclass, new features, etc. → goes to featuresTraits
+
+  // Structured additions (tracked for level-down rollback)
+  selectedFeat?: string;                              // Feat chosen instead of ASI
+  featAbilityBonus?: AbilityName;                     // Ability chosen for feat ability score bonus
+  newSubclass?: string;                               // Subclass chosen at this level
+  selectedFightingStyle?: string;                     // Fighting style chosen at this level
+  addedTraits?: TraitItem[];                          // Traits added to traitsList
+  spellSlotsGained?: Record<number, number>;          // Updated spell slots at this level
+  newCantrips: string[];                              // cantrip names added
+  newSpells: { level: number; name: string; prepared: boolean }[];  // spells by level
+  newSavingThrowProfs: AbilityName[];                 // new saving throw proficiencies
+  newSkillProfs: string[];                            // new skill proficiencies
+  newSkillExpertise: string[];                        // new skill expertise
+  newAttacks: Attack[];                               // new attacks added
+  newProficienciesText: string;                       // text to append to otherProficienciesLanguages
+  newEquipmentText: string;                           // text to append to equipment
+
+  // Warlock Choices
+  pactBoon?: string;
+  tomeCantrips?: string[];
+  warlockInvocations?: string[];
+  swappedOutInvocation?: string;
+  swappedInInvocation?: string;
+  mysticArcanumSpell?: string;
+  fiendResilienceDamageType?: string;
+  genieKind?: string;
+}
+
+export interface CharacterConcentration {
+  spellName: string;
+  dc?: number;
+  castAtLevel?: number;
+}
+
+export interface DndConditionInfo {
+  id: string;
+  name: string;
+  description: string;
+  rulesSummary: string[];
+}
+
+export const DND_CONDITIONS: DndConditionInfo[] = [
+  {
+    id: 'blinded',
+    name: 'Ослеплён',
+    description: 'Ослеплённое существо ничего не видит и автоматически проваливает все проверки характеристик, требующие зрения.',
+    rulesSummary: [
+      'Автоматический провал проверок характеристик, требующих зрения',
+      'Броски атаки против ослеплённого существа совершаются с преимуществом',
+      'Броски атаки самого существа совершаются с помехой',
+    ],
+  },
+  {
+    id: 'charmed',
+    name: 'Очарован',
+    description: 'Очарованное существо не может атаковать того, кто его очаровал, или делать его целью вредоносных способностей или магических эффектов.',
+    rulesSummary: [
+      'Не может атаковать или делать целью вредоносных эффектов очаровавшего',
+      'Очаровавший совершает с преимуществом проверки характеристик при социальном взаимодействии с этим существом',
+    ],
+  },
+  {
+    id: 'deafened',
+    name: 'Оглохший',
+    description: 'Оглохшее существо ничего не слышит и автоматически проваливает все проверки характеристик, требующие слуха.',
+    rulesSummary: [
+      'Автоматический провал проверок характеристик, требующих слуха',
+    ],
+  },
+  {
+    id: 'frightened',
+    name: 'Испуган',
+    description: 'Испуганное существо совершает с помехой проверки характеристик и броски атаки, пока источник его страха находится в пределах прямой видимости.',
+    rulesSummary: [
+      'Помеха на проверки характеристик и броски атаки, пока виден источник страха',
+      'Не может добровольно приблизиться к источнику своего страха',
+    ],
+  },
+  {
+    id: 'grappled',
+    name: 'Захвачен',
+    description: 'Скорость захваченного существа становится равна 0, и оно не может получать выгоду от любых бонусов к скорости.',
+    rulesSummary: [
+      'Скорость становится равна 0 (никакие бонусы к скорости не действуют)',
+      'Состояние оканчивается, если захвативший становится недееспособен',
+      'Состояние оканчивается, если эффект выводит существо из зоны досягаемости захватившего',
+    ],
+  },
+  {
+    id: 'incapacitated',
+    name: 'Недееспособен',
+    description: 'Недееспособное существо не может совершать действия и реакции. Концентрация на заклинаниях немедленно сбрасывается.',
+    rulesSummary: [
+      'Не может совершать действия и реакции',
+      'Немедленно прерывает концентрацию на заклинаниях',
+    ],
+  },
+  {
+    id: 'invisible',
+    name: 'Невидимый',
+    description: 'Невидимое существо невозможно обнаружить без помощи магии или особых чувств. В плане скрытности считается тяжело заслонённым.',
+    rulesSummary: [
+      'Считается тяжело заслонённым при попытках спрятаться',
+      'Броски атаки против существа совершаются с помехой',
+      'Броски атаки самого существа совершаются с преимуществом',
+    ],
+  },
+  {
+    id: 'paralyzed',
+    name: 'Парализован',
+    description: 'Парализованное существо недееспособно, не может двигаться и говорить. Автоматически проваливает спасброски Силы и Ловкости.',
+    rulesSummary: [
+      'Недееспособен (не может совершать действия и реакции, сбрасывает концентрацию)',
+      'Не может двигаться и говорить',
+      'Автоматический провал спасбросков Силы и Ловкости',
+      'Броски атаки против существа совершаются с преимуществом',
+      'Любая атака, попавшая по существу с расстояния до 5 футов, является критическим попаданием',
+    ],
+  },
+  {
+    id: 'petrified',
+    name: 'Окаменевший',
+    description: 'Существо трансформировано в твёрдую неодушевлённую субстанцию (обычно камень). Вес увеличивается в 10 раз, старение прекращается.',
+    rulesSummary: [
+      'Недееспособен (не может совершать действия и реакции, говорить и двигаться, сбрасывает концентрацию)',
+      'Автоматический провал спасбросков Силы и Ловкости',
+      'Броски атаки против существа совершаются с преимуществом',
+      'Сопротивление ко всем видам урона',
+      'Иммунитет к яду и болезням',
+    ],
+  },
+  {
+    id: 'poisoned',
+    name: 'Отравлен',
+    description: 'Отравленное существо совершает с помехой броски атаки и проверки характеристик.',
+    rulesSummary: [
+      'Помеха на все броски атаки',
+      'Помеха на все проверки характеристик',
+    ],
+  },
+  {
+    id: 'prone',
+    name: 'Сбит с ног',
+    description: 'Сбитое с ног существо может только ползти, пока не встанет, потратив половину своей базовой скорости.',
+    rulesSummary: [
+      'Единственный способ перемещения — ползком (каждый фут передвижения стоит дополнительный фут)',
+      'Чтобы встать, необходимо потратить половину скорости',
+      'Помеха на броски атаки самого существа',
+      'Броски атаки против существа совершаются с преимуществом, если атакующий в пределах 5 футов; иначе с помехой',
+    ],
+  },
+  {
+    id: 'restrained',
+    name: 'Опутан',
+    description: 'Скорость опутанного существа равна 0, и оно не может получать выгоду от любых бонусов к скорости.',
+    rulesSummary: [
+      'Скорость становится равна 0',
+      'Броски атаки против существа совершаются с преимуществом',
+      'Броски атаки самого существа совершаются с помехой',
+      'Помеха на спасброски Ловкости',
+    ],
+  },
+  {
+    id: 'stunned',
+    name: 'Ошеломлён',
+    description: 'Ошеломлённое существо недееспособно, не может двигаться и говорит только с запинками. Автоматический провал спасбросков Силы и Ловкости.',
+    rulesSummary: [
+      'Недееспособен (не может совершать действия и реакции, сбрасывает концентрацию)',
+      'Не может двигаться, речь невнятная',
+      'Автоматический провал спасбросков Силы и Ловкости',
+      'Броски атаки против существа совершаются с преимуществом',
+    ],
+  },
+  {
+    id: 'unconscious',
+    name: 'Бессознательный',
+    description: 'Бессознательное существо недееспособно, не может двигаться и говорить, роняет всё, что держит в руках, и падает ничком.',
+    rulesSummary: [
+      'Недееспособен (не может двигаться, говорить, действовать, сбрасывает концентрацию)',
+      'Роняет всё из рук и падает ничком',
+      'Автоматический провал спасбросков Силы и Ловкости',
+      'Броски атаки против существа совершаются с преимуществом',
+      'Любое попадание атаки с расстояния до 5 футов является критическим попаданием',
+    ],
+  },
+  {
+    id: 'exhaustion',
+    name: 'Истощение',
+    description: 'Истощение измеряется 6 уровнями. Эффекты накапливаются: 1-проверки, 2-скорость /2, 3-атаки/спасброски, 4-хиты /2, 5-скорость 0, 6-смерть.',
+    rulesSummary: [
+      '1 уровень: Помеха на проверки характеристик',
+      '2 уровень: Скорость уменьшается вдвое',
+      '3 уровень: Помеха на броски атаки и спасброски',
+      '4 уровень: Максимум хитов уменьшается вдвое',
+      '5 уровень: Скорость уменьшается до 0',
+      '6 уровень: Смерть персонажа',
+    ],
+  },
+];
+
+export function isConditionIncapacitating(conditionId: string): boolean {
+  if (!conditionId) return false;
+  const baseId = conditionId.split(':')[0].toLowerCase().trim();
+  return ['incapacitated', 'paralyzed', 'petrified', 'stunned', 'unconscious'].includes(baseId);
+}
+
+export function calculateConcentrationDC(damage?: number): number {
+  return Math.max(10, Math.floor((damage || 0) / 2));
+}
+
+export interface PotionItem {
+  id: string;
+  name: string;
+  nameEn?: string;
+  type: 'heal' | 'buff' | 'utility';
+  rarity: 'обычное' | 'необычное' | 'редкое' | 'очень редкое' | 'легендарное' | 'артефакт';
+  quantity: number;
+  formula?: string;
+  effectSummary: string;
+  description: string;
+  actionCost: 'bonus_action';
+}
+
+export interface GearItem {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: 'шт.' | 'фт.' | 'дн.' | 'фнт.';
+}
+
+export interface CharacterData {
+  // Conditions & Concentration
+  conditions?: string[];
+  concentration?: CharacterConcentration | null;
+
+  // Basic Info
+  name: string;
+  className: string;
+  level: number;
+  background: string;
+  playerName: string;
+  race: string;
+  subrace?: string;
+  subclass?: string;
+  alignment: string;
+  experiencePoints: number;
+  inspiration: boolean;
+
+  // Ability Scores (base)
+  abilityScores: Record<AbilityName, number>;
+  // Racial / Other bonuses
+  abilityBonuses: Record<AbilityName, number>;
+  // ASI bonuses (from level-ups)
+  asiBonuses: Record<AbilityName, number>;
+
+  // Saving throw proficiencies
+  savingThrowProficiencies: Record<AbilityName, boolean>;
+
+  // Skill proficiencies & expertise
+  skillProficiencies: Record<string, boolean>;
+  skillExpertise: Record<string, boolean>;
+
+  // Combat
+  armorClass: number | null;
+  equippedArmor?: string;
+  equippedShield?: boolean;
+  equippedSlots?: Partial<Record<string, any>>;
+  customItems?: any[];
+  initiativeOverride: number | null;
+  speed: number;
+  hpMax: number | null;
+  hpCurrent: number;
+  hpTemp: number;
+  hitDice: string;
+  hitDiceSpent?: number;
+
+  // Death saves
+  deathSaveSuccesses: number;
+  deathSaveFailures: number;
+
+  // Attacks
+  attacks: Attack[];
+
+  // Currency
+  cp: number;
+  sp: number;
+  ep: number;
+  gp: number;
+  pp: number;
+
+  // Personality
+  personalityTraits: string;
+  ideals: string;
+  bonds: string;
+  flaws: string;
+
+  // Other
+  otherProficienciesLanguages: string;
+  featuresTraits: string;
+  traitsList?: TraitItem[];
+  equipment: string;
+  potions?: PotionItem[];
+  inventoryGear?: GearItem[];
+
+  // Page 2
+  gender?: string;
+  age: string;
+  height: string;
+  weight: string;
+  eyes: string;
+  skin: string;
+  hair: string;
+  appearance: string;
+  alliesOrganizations: string;
+  additionalFeaturesTraits: string;
+  backstory: string;
+  treasure: string;
+
+  // Page 3: Spellcasting
+  spellcastingClass: string;
+  spellcastingAbility: AbilityName | '';
+  spellSlots: Record<number, SpellSlotInfo>;
+  cantrips: string[];
+  spellsByLevel: Record<number, SpellEntry[]>;
+
+  // Level-up history
+  levelHistory: LevelUpEntry[];
+
+  // Portrait (optional URL or Base64)
+  portraitUrl?: string | null;
+}
+
+// ── Universal Calculation Functions ──
+
+export function calcModifier(score: number): number {
+  return Math.floor((score - 10) / 2);
+}
+
+export function formatModifier(mod: number): string {
+  return mod >= 0 ? `+${mod}` : `${mod}`;
+}
+
+export function formatAbilityBonus(bonus: number): string {
+  if (bonus > 0) return `+${bonus}`;
+  if (bonus < 0) return `${bonus}`;
+  return '0';
+}
+
+// Universal proficiency bonus by level
+export function calcProficiencyBonus(level: number): number {
+  if (level <= 4) return 2;
+  if (level <= 8) return 3;
+  if (level <= 12) return 4;
+  if (level <= 16) return 5;
+  return 6;
+}
+
+// Universal ASI levels (standard 5e: 4,8,12,16,19)
+export const STANDARD_ASI_LEVELS = [4, 8, 12, 16, 19];
+
+export function isStandardASILevel(level: number, className?: string): boolean {
+  if (className) {
+    const c = className.trim().toLowerCase();
+    if (c.includes('воин') || c.includes('fighter')) {
+      return [4, 6, 8, 12, 14, 16, 19].includes(level);
+    }
+    if (c.includes('плут') || c.includes('rogue')) {
+      return [4, 8, 10, 12, 16, 19].includes(level);
+    }
+  }
+  return STANDARD_ASI_LEVELS.includes(level);
+}
+
+// Universal milestones by level
+export const UNIVERSAL_MILESTONES: Record<number, string[]> = {
+  1:  ['Классовые особенности 1-го уровня'],
+  2:  ['Классовые особенности 2-го уровня'],
+  3:  ['Выбор подкласса / Архетипа'],
+  4:  ['Улучшение характеристики (АСИ) или черта'],
+  5:  ['Бонус мастерства +3'],
+  6:  ['Классовые особенности 6-го уровня'],
+  7:  ['Классовые особенности 7-го уровня'],
+  8:  ['Улучшение характеристики (АСИ) или черта'],
+  9:  ['Бонус мастерства +4'],
+  10: ['Классовые особенности 10-го уровня'],
+  11: ['Классовые особенности 11-го уровня'],
+  12: ['Улучшение характеристики (АСИ) или черта'],
+  13: ['Бонус мастерства +5'],
+  14: ['Классовые особенности 14-го уровня'],
+  15: ['Классовые особенности 15-го уровня'],
+  16: ['Улучшение характеристики (АСИ) или черта'],
+  17: ['Бонус мастерства +6'],
+  18: ['Классовые особенности 18-го уровня'],
+  19: ['Улучшение характеристики (АСИ) или черта'],
+  20: ['Классовые особенности 20-го уровня (макс.)'],
+};
+
+export function getMilestonesAtLevel(level: number, className?: string): string[] {
+  const base = [...(UNIVERSAL_MILESTONES[level] || [])];
+  if (className) {
+    const c = className.trim().toLowerCase();
+    const isFighter = c.includes('воин') || c.includes('fighter');
+    const isRogue = c.includes('плут') || c.includes('rogue');
+    if (isFighter && (level === 6 || level === 14)) {
+      if (!base.includes('Улучшение характеристики (АСИ) или черта')) {
+        base.push('Дополнительное АСИ Воина или черта');
+      }
+    }
+    if (isRogue && level === 10) {
+      if (!base.includes('Улучшение характеристики (АСИ) или черта')) {
+        base.push('Дополнительное АСИ Плута или черта');
+      }
+    }
+  }
+  return base;
+}
+
+export function normalizeAbilityName(ability: string): AbilityName {
+  const lower = (ability || '').toLowerCase().trim();
+  if (lower === 'сил' || lower === 'str' || lower === 'сила' || lower === 'strength') return 'СИЛ';
+  if (lower === 'лов' || lower === 'dex' || lower === 'ловкость' || lower === 'dexterity') return 'ЛОВ';
+  if (lower === 'тел' || lower === 'con' || lower === 'телосложение' || lower === 'constitution') return 'ТЕЛ';
+  if (lower === 'инт' || lower === 'int' || lower === 'интеллект' || lower === 'intelligence') return 'ИНТ';
+  if (lower === 'мдр' || lower === 'wis' || lower === 'мудрость' || lower === 'wisdom') return 'МДР';
+  if (lower === 'хар' || lower === 'cha' || lower === 'харизма' || lower === 'charisma') return 'ХАР';
+  return 'СИЛ';
+}
+
+export function getTotalScore(char: CharacterData, ability: AbilityName | string): number {
+  const norm = normalizeAbilityName(ability as string);
+  let eqBonus = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'ability' && eff.targetAbility) {
+            if (normalizeAbilityName(eff.targetAbility) === norm) {
+              eqBonus += Number(eff.value) || 0;
+            }
+          }
+        }
+      }
+    }
+  }
+  const rawScore = (char.abilityScores as any)?.[ability] ?? (char.abilityScores as any)?.[norm] ?? 10;
+  const rawBonus = (char.abilityBonuses as any)?.[ability] ?? (char.abilityBonuses as any)?.[norm] ?? 0;
+  const rawAsi = (char.asiBonuses as any)?.[ability] ?? (char.asiBonuses as any)?.[norm] ?? 0;
+  return rawScore + rawBonus + rawAsi + eqBonus;
+}
+
+export function getModifier(char: CharacterData, ability: AbilityName): number {
+  return calcModifier(getTotalScore(char, ability));
+}
+
+export function getSavingThrow(char: CharacterData, ability: AbilityName): number {
+  let mod = getModifier(char, ability);
+  if (char.savingThrowProficiencies[ability]) {
+    mod += calcProficiencyBonus(char.level);
+  }
+  let eqSave = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'savingThrows') {
+            eqSave += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  return mod + eqSave;
+}
+
+export function getSkillBonus(char: CharacterData, skill: string): number {
+  const ability = SKILL_MAP[skill] || 'СИЛ';
+  let mod = getModifier(char, ability);
+  if (char.skillExpertise[skill]) {
+    mod += calcProficiencyBonus(char.level) * 2;
+  } else if (char.skillProficiencies[skill]) {
+    mod += calcProficiencyBonus(char.level);
+  }
+  return mod;
+}
+
+export function getInitiative(char: CharacterData): number {
+  if (char.initiativeOverride !== null) return char.initiativeOverride;
+  return getModifier(char, 'ЛОВ');
+}
+
+export function getPassivePerception(char: CharacterData): number {
+  return 10 + getSkillBonus(char, 'Внимательность');
+}
+
+/**
+ * Checks if a character has the Powerful Build trait (counts as one size larger for carry/push/drag/lift).
+ */
+export function hasPowerfulBuild(char: CharacterData): boolean {
+  const race = (char.race || '').toLowerCase();
+  const subrace = (char.subrace || '').toLowerCase();
+  const features = (char.featuresTraits || '').toLowerCase();
+  const addFeatures = (char.additionalFeaturesTraits || '').toLowerCase();
+
+  const racePattern = /голиаф|goliath|фирболг|firbolg|багбир|bugbear|локсодон|loxodon|орк|orc/i;
+  if (racePattern.test(race) || racePattern.test(subrace)) {
+    return true;
+  }
+
+  const traitPattern = /мощное телосложение|powerful build/i;
+  if (traitPattern.test(features) || traitPattern.test(addFeatures)) {
+    return true;
+  }
+
+  if (Array.isArray(char.traitsList)) {
+    for (const t of char.traitsList) {
+      if (traitPattern.test(t.name || '') || traitPattern.test(t.description || '')) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+export interface CarryingCapacity {
+  maxCarry: number;     // STR * 15 (lbs) * multiplier
+  pushDragLift: number; // STR * 30 (lbs) * multiplier
+  isPowerfulBuild: boolean;
+}
+
+/**
+ * Calculates maximum carrying capacity and push/drag/lift capacity per D&D 5e PHB p. 176.
+ */
+export function getCarryingCapacity(char: CharacterData): CarryingCapacity {
+  const strScore = getTotalScore(char, 'СИЛ');
+  const powerful = hasPowerfulBuild(char);
+  const mult = powerful ? 2 : 1;
+  return {
+    maxCarry: strScore * 15 * mult,
+    pushDragLift: strScore * 30 * mult,
+    isPowerfulBuild: powerful,
+  };
+}
+
+export interface JumpDistances {
+  longRun: number;       // STR (ft)
+  longStanding: number;  // floor(STR / 2) (ft)
+  highRun: number;       // max(0, 3 + STR mod) (ft)
+  highStanding: number;  // max(0, floor((3 + STR mod) / 2)) (ft)
+}
+
+/**
+ * Calculates long and high jump distances per D&D 5e PHB p. 182.
+ */
+export function getJumpDistances(char: CharacterData): JumpDistances {
+  const strScore = getTotalScore(char, 'СИЛ');
+  const strMod = calcModifier(strScore);
+  return {
+    longRun: strScore,
+    longStanding: Math.floor(strScore / 2),
+    highRun: Math.max(0, 3 + strMod),
+    highStanding: Math.max(0, Math.floor((3 + strMod) / 2)),
+  };
+}
+
+/**
+ * Resolves the primary ability (СИЛ, ЛОВ, etc.) governing an attack roll and damage.
+ */
+export function resolveAttackAbility(
+  atk: Attack,
+  char?: Partial<Pick<CharacterData, 'abilityScores' | 'abilityBonuses' | 'asiBonuses' | 'level'>>
+): AbilityName {
+  if (atk.ability && (ABILITY_NAMES as readonly string[]).includes(atk.ability)) {
+    return atk.ability;
+  }
+
+  const strScore = char ? ((char.abilityScores?.['СИЛ'] || 10) + (char.abilityBonuses?.['СИЛ'] || 0) + (char.asiBonuses?.['СИЛ'] || 0)) : 10;
+  const dexScore = char ? ((char.abilityScores?.['ЛОВ'] || 10) + (char.abilityBonuses?.['ЛОВ'] || 0) + (char.asiBonuses?.['ЛОВ'] || 0)) : 10;
+  const strMod = calcModifier(strScore);
+  const dexMod = calcModifier(dexScore);
+
+  const weapon = findWeaponByName(atk.name);
+  if (weapon) {
+    if (weapon.category.includes('дальнобойное')) {
+      return 'ЛОВ';
+    }
+    if (weapon.finesse) {
+      return dexMod >= strMod ? 'ЛОВ' : 'СИЛ';
+    }
+    return 'СИЛ';
+  }
+
+  // Fallback heuristics based on common weapon keywords in Russian and English
+  const cleanName = (atk.name || '').toLowerCase();
+  if (/(дальнобойн|лук|арбалет|дротик|пращ|трубк|blowgun|bow|crossbow|dart|sling)/i.test(cleanName)) {
+    return 'ЛОВ';
+  }
+  if (/(рапир|кинжал|короткий меч|с[кк]имитар|кнут|rapier|dagger|shortsword|scimitar|whip)/i.test(cleanName)) {
+    return dexMod >= strMod ? 'ЛОВ' : 'СИЛ';
+  }
+  if (/(меч|топор|молот|булав|копь|палиц|алебард|глеф|пик|дубинк|кирка|трезубец|sword|axe|hammer|mace|spear|halberd|glaive|pike|club)/i.test(cleanName)) {
+    return 'СИЛ';
+  }
+
+  // If damage string matches dexMod or strMod specifically
+  const dmgMatch = (atk.damageAndType || '').match(/[+-]\d+/);
+  if (dmgMatch) {
+    const val = parseInt(dmgMatch[0], 10);
+    if (val === dexMod && val !== strMod) return 'ЛОВ';
+    if (val === strMod && val !== dexMod) return 'СИЛ';
+  }
+
+  return 'СИЛ';
+}
+
+/**
+ * Recalculates attack bonus and damage bonus for a single attack based on stat/BM delta.
+ * Follows D&D 5e rules:
+ * - Attack Roll = Mod + BM + MagicBonus
+ * - Damage Roll = Dice + Mod + MagicBonus (Proficiency bonus NEVER applies to weapon damage)
+ */
+export function recalculateSingleAttack(
+  atk: Attack,
+  oldMods: Record<AbilityName, number>,
+  newMods: Record<AbilityName, number>,
+  oldProf: number,
+  newProf: number,
+  char?: Partial<Pick<CharacterData, 'abilityScores' | 'abilityBonuses' | 'asiBonuses' | 'level'>>
+): Attack {
+  const ability = atk.ability || resolveAttackAbility(atk, char);
+  const deltaMod = (newMods[ability] ?? 0) - (oldMods[ability] ?? 0);
+  const isProf = atk.proficient !== false && atk.isProficient !== false;
+  const deltaProf = isProf ? (newProf - oldProf) : 0;
+
+  if (deltaMod === 0 && deltaProf === 0) {
+    return { ...atk, ability };
+  }
+
+  let newAttackBonus = atk.attackBonus;
+  if (atk.attackBonus && atk.attackBonus.trim()) {
+    const bonusMatch = atk.attackBonus.trim().match(/^([+-]?\d+)$/);
+    if (bonusMatch) {
+      const currentBonus = parseInt(bonusMatch[1], 10);
+      const updatedBonus = currentBonus + deltaMod + deltaProf;
+      newAttackBonus = formatModifier(updatedBonus);
+    }
+  }
+
+  let newDamage = atk.damageAndType;
+  if (deltaMod !== 0 && atk.damageAndType && atk.damageAndType.trim()) {
+    const hasExistingMod = /[+-]\d+/.test(atk.damageAndType);
+    if (hasExistingMod) {
+      newDamage = atk.damageAndType.replace(/([+-])(\d+)/g, (_, sign, digits) => {
+        const currentMod = parseInt(`${sign}${digits}`, 10);
+        const nextMod = currentMod + deltaMod;
+        if (nextMod === 0) return '';
+        return nextMod > 0 ? `+${nextMod}` : `${nextMod}`;
+      });
+      newDamage = newDamage.replace(/\s{2,}/g, ' ').trim();
+    } else {
+      if (deltaMod !== 0) {
+        const modStr = deltaMod > 0 ? `+${deltaMod}` : `${deltaMod}`;
+        newDamage = atk.damageAndType.replace(/(\d+d\d+)/g, `$1${modStr}`);
+      }
+    }
+  }
+
+  return {
+    ...atk,
+    ability,
+    attackBonus: newAttackBonus,
+    damageAndType: newDamage
+  };
+}
+
+/**
+ * Toggles or sets weapon proficiency on an attack and recalculates the attack bonus accordingly.
+ */
+export function setAttackProficiency(atk: Attack, proficient: boolean, prof: number): Attack {
+  const currentProficient = atk.proficient !== false && atk.isProficient !== false;
+  if (currentProficient === proficient) {
+    return { ...atk, proficient, isProficient: proficient };
+  }
+
+  let newAttackBonus = atk.attackBonus;
+  if (atk.attackBonus && atk.attackBonus.trim()) {
+    const bonusMatch = atk.attackBonus.trim().match(/^([+-]?\d+)$/);
+    if (bonusMatch) {
+      const currentBonus = parseInt(bonusMatch[1], 10);
+      const updatedBonus = proficient ? currentBonus + prof : currentBonus - prof;
+      newAttackBonus = formatModifier(updatedBonus);
+    }
+  }
+
+  return {
+    ...atk,
+    proficient,
+    isProficient: proficient,
+    attackBonus: newAttackBonus,
+  };
+}
+
+/**
+ * Batch recalculates all attacks when ability modifiers or proficiency bonus change.
+ */
+export function recalculateAttacksOnStatsChange(
+  attacks: Attack[],
+  oldMods: Record<AbilityName, number>,
+  newMods: Record<AbilityName, number>,
+  oldProf: number,
+  newProf: number,
+  char?: Partial<Pick<CharacterData, 'abilityScores' | 'abilityBonuses' | 'asiBonuses' | 'level'>>
+): Attack[] {
+  if (!Array.isArray(attacks) || attacks.length === 0) return [];
+  return attacks.map(atk => recalculateSingleAttack(atk, oldMods, newMods, oldProf, newProf, char));
+}
+
+export interface ShortRestOptions {
+  diceSpent: number;
+  hpHealed: number;
+  resetWarlockSlots?: boolean;
+}
+
+/**
+ * Applies the effects of a Short Rest per D&D 5e PHB p. 186.
+ */
+export function applyShortRest(char: CharacterData, options: ShortRestOptions): CharacterData {
+  const maxHP = char.hpMax ?? 10;
+  const newHpCurrent = Math.min(maxHP, char.hpCurrent + Math.max(0, options.hpHealed));
+  const newDiceSpent = Math.max(0, (char.hitDiceSpent || 0) + options.diceSpent);
+
+  let updatedSpellSlots = char.spellSlots;
+  if (options.resetWarlockSlots && char.spellSlots) {
+    const isWarlock = /колдун|warlock/i.test(char.className || '');
+    if (isWarlock) {
+      updatedSpellSlots = { ...char.spellSlots };
+      for (const [lvl, slot] of Object.entries(updatedSpellSlots)) {
+        if (slot && slot.expendedSlots > 0) {
+          updatedSpellSlots[Number(lvl)] = { ...slot, expendedSlots: 0 };
+        }
+      }
+    }
+  }
+
+  return {
+    ...char,
+    hpCurrent: newHpCurrent,
+    hitDiceSpent: newDiceSpent,
+    spellSlots: updatedSpellSlots,
+  };
+}
+
+/**
+ * Applies the effects of a Long Rest per D&D 5e PHB p. 186:
+ * - Regains all hit points up to hpMax.
+ * - Resets temporary hit points to 0.
+ * - Resets death saves.
+ * - Regains expended spell slots.
+ * - Regains spent hit dice up to floor(level / 2), minimum 1.
+ */
+export function applyLongRest(char: CharacterData): CharacterData {
+  const maxHP = char.hpMax ?? 10;
+  const totalHitDice = char.level || 1;
+  const diceToRecover = Math.max(1, Math.floor(totalHitDice / 2));
+  const newDiceSpent = Math.max(0, (char.hitDiceSpent || 0) - diceToRecover);
+
+  const updatedSpellSlots: Record<number, SpellSlotInfo> = {};
+  if (char.spellSlots) {
+    for (const [lvl, slot] of Object.entries(char.spellSlots)) {
+      if (slot) {
+        updatedSpellSlots[Number(lvl)] = { ...slot, expendedSlots: 0 };
+      }
+    }
+  }
+
+  return {
+    ...char,
+    hpCurrent: maxHP,
+    hpTemp: 0,
+    deathSaveSuccesses: 0,
+    deathSaveFailures: 0,
+    hitDiceSpent: newDiceSpent,
+    spellSlots: updatedSpellSlots,
+  };
+}
+
+export const ARMOR_AC_MAP: Record<string, { baseAC: number; type: 'light' | 'medium' | 'heavy' | 'shield'; maxDex?: number }> = {
+  'Стеганый доспех': { baseAC: 11, type: 'light' },
+  'Кожаный доспех': { baseAC: 11, type: 'light' },
+  'Проклепанный кожаный доспех': { baseAC: 12, type: 'light' },
+  'Шкурный доспех': { baseAC: 12, type: 'medium', maxDex: 2 },
+  'Кольчужная рубаха': { baseAC: 13, type: 'medium', maxDex: 2 },
+  'Чешуйчатый доспех': { baseAC: 14, type: 'medium', maxDex: 2 },
+  'Кираса': { baseAC: 14, type: 'medium', maxDex: 2 },
+  'Полулаты': { baseAC: 15, type: 'medium', maxDex: 2 },
+  'Колечный доспех': { baseAC: 14, type: 'heavy' },
+  'Кольчуга': { baseAC: 16, type: 'heavy' },
+  'Наборный доспех': { baseAC: 17, type: 'heavy' },
+  'Латы': { baseAC: 18, type: 'heavy' },
+  'Щит': { baseAC: 2, type: 'shield' },
+  'Padded Armor': { baseAC: 11, type: 'light' },
+  'Leather Armor': { baseAC: 11, type: 'light' },
+  'Studded Leather Armor': { baseAC: 12, type: 'light' },
+  'Hide Armor': { baseAC: 12, type: 'medium', maxDex: 2 },
+  'Chain Shirt': { baseAC: 13, type: 'medium', maxDex: 2 },
+  'Scale Mail': { baseAC: 14, type: 'medium', maxDex: 2 },
+  'Breastplate': { baseAC: 14, type: 'medium', maxDex: 2 },
+  'Half Plate Armor': { baseAC: 15, type: 'medium', maxDex: 2 },
+  'Ring Mail': { baseAC: 14, type: 'heavy' },
+  'Chain Mail': { baseAC: 16, type: 'heavy' },
+  'Splint Armor': { baseAC: 17, type: 'heavy' },
+  'Plate Armor': { baseAC: 18, type: 'heavy' },
+  'Shield': { baseAC: 2, type: 'shield' },
+};
+
+export interface ArmorModeOption {
+  key: string;
+  name: string;
+  ac: number;
+  description: string;
+  category: 'unarmored' | 'light' | 'medium' | 'heavy';
+}
+
+export function getCalculatedAC(char: CharacterData): number {
+  const dexMod = getModifier(char, 'ЛОВ');
+  const conMod = getModifier(char, 'ТЕЛ');
+  const wisMod = getModifier(char, 'МДР');
+
+  let accessoryAcBonus = 0;
+  if (char.equippedSlots) {
+    for (const [slotId, item] of Object.entries(char.equippedSlots)) {
+      if (!item) continue;
+      if (item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'ac') {
+            accessoryAcBonus += Number(eff.value) || 0;
+          }
+        }
+      }
+      if (slotId !== 'armor' && slotId !== 'offHand' && typeof item.bonusAC === 'number') {
+        accessoryAcBonus += item.bonusAC;
+      }
+    }
+  }
+
+  const normRace = (char.race || '').toLowerCase();
+  const normSubrace = (char.subrace || '').toLowerCase();
+  const normClass = (char.className || '').toLowerCase();
+  const normSubclass = (char.subclass || '').toLowerCase();
+
+  const traits = (char.traitsList || []).map(t => (t.name || '').toLowerCase());
+  const featsText = (char.featuresTraits || '').toLowerCase();
+  const hasTrait = (kw: string) => traits.some(t => t.includes(kw)) || featsText.includes(kw);
+
+  const isWarforged =
+    normRace.includes('кован') ||
+    normRace.includes('warforged') ||
+    normSubrace.includes('кован') ||
+    hasTrait('встроенная защита') ||
+    hasTrait('integrated protection');
+  const warforgedBonus = isWarforged ? 1 : 0;
+
+  const hasDefenseStyle = hasTrait('оборона') || hasTrait('defense');
+  const hasSimicCarapace = hasTrait('панцирь') && (normRace.includes('симик') || normRace.includes('simic'));
+
+  const equipped = (char.equippedArmor || '').trim();
+
+  // If a standard armor from ARMOR_AC_MAP is worn
+  if (equipped && ARMOR_AC_MAP[equipped]) {
+    const armor = ARMOR_AC_MAP[equipped];
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    let base = armor.baseAC;
+    if (armor.type === 'light') {
+      base += dexMod;
+    } else if (armor.type === 'medium') {
+      base += Math.min(armor.maxDex ?? 2, Math.max(0, dexMod));
+    }
+    let total = base + shieldBonus + warforgedBonus;
+    if (hasDefenseStyle) {
+      total += 1;
+    }
+    if (hasSimicCarapace && armor.type !== 'heavy') {
+      total += 1;
+    }
+    return total + accessoryAcBonus;
+  }
+
+  // Handle explicit unarmored modes
+  const isTortleMode = equipped === 'unarmored:tortle';
+  const isThrikreenMode = equipped === 'unarmored:thrikreen';
+  const isLizardfolkMode = equipped === 'unarmored:lizardfolk';
+  const isLoxodonMode = equipped === 'unarmored:loxodon';
+  const isAutognomeMode = equipped === 'unarmored:autognome';
+  const isLocathahMode = equipped === 'unarmored:locathah';
+  const isDraconicMode = equipped === 'unarmored:draconic';
+  const isMageArmorMode = equipped === 'unarmored:mage_armor';
+  const isBarbarianMode = equipped === 'unarmored:barbarian';
+  const isMonkMode = equipped === 'unarmored:monk';
+  const isStandardUnarmoredMode = equipped === 'unarmored:standard';
+
+  if (isTortleMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 17 + shieldBonus + warforgedBonus + accessoryAcBonus;
+  }
+  if (isThrikreenMode || isLizardfolkMode || isAutognomeMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 13 + dexMod + shieldBonus + warforgedBonus + accessoryAcBonus;
+  }
+  if (isLoxodonMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 12 + conMod + shieldBonus + warforgedBonus + accessoryAcBonus;
+  }
+  if (isLocathahMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 12 + dexMod + shieldBonus + warforgedBonus + accessoryAcBonus;
+  }
+  if (isDraconicMode || isMageArmorMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 13 + dexMod + shieldBonus + warforgedBonus + accessoryAcBonus;
+  }
+  if (isBarbarianMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 10 + dexMod + conMod + shieldBonus + warforgedBonus + accessoryAcBonus;
+  }
+  if (isMonkMode) {
+    if (char.equippedShield) {
+      return 10 + dexMod + 2 + warforgedBonus + accessoryAcBonus;
+    }
+    return 10 + dexMod + wisMod + warforgedBonus + accessoryAcBonus;
+  }
+  if (isStandardUnarmoredMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 10 + dexMod + shieldBonus + warforgedBonus + accessoryAcBonus;
+  }
+
+  // Automatic calculation when equippedArmor is empty or default
+  const isBarbarian = normClass.includes('варвар') || normClass.includes('barbarian');
+  const isMonk = normClass.includes('монах') || normClass.includes('monk');
+  const isDraconicSorcerer =
+    (normClass.includes('чародей') || normClass.includes('sorcerer')) &&
+    (normSubclass.includes('дракон') || normSubclass.includes('draconic'));
+
+  const isTortle = normRace.includes('тортл') || normRace.includes('tortle') || hasTrait('природный панцирь');
+  const isThrikreen = normRace.includes('трикрин') || normRace.includes('thri-kreen') || normRace.includes('thrikreen');
+  const isLizardfolk = normRace.includes('людоящер') || normRace.includes('lizardfolk') || normRace.includes('lizard');
+  const isLoxodon = normRace.includes('локсодон') || normRace.includes('loxodon');
+  const isAutognome = normRace.includes('автогном') || normRace.includes('autognome');
+  const isLocathah = normRace.includes('локата') || normRace.includes('locathah');
+
+  const candidates: number[] = [];
+  candidates.push(10 + dexMod);
+
+  if (isTortle) {
+    candidates.push(17);
+  }
+  if (isLoxodon) {
+    candidates.push(12 + conMod);
+  }
+  if (isThrikreen || isLizardfolk || isAutognome) {
+    candidates.push(13 + dexMod);
+  }
+  if (isLocathah) {
+    candidates.push(12 + dexMod);
+  }
+  if (isDraconicSorcerer) {
+    candidates.push(13 + dexMod);
+  }
+  if (isBarbarian) {
+    candidates.push(10 + dexMod + conMod);
+  }
+  if (isMonk && !char.equippedShield) {
+    candidates.push(10 + dexMod + wisMod);
+  }
+
+  let bestBase = Math.max(...candidates);
+
+  let shieldBonus = 0;
+  if (char.equippedShield) {
+    if (isMonk && bestBase === 10 + dexMod + wisMod) {
+      const nonMonkCandidates = candidates.filter(c => c !== 10 + dexMod + wisMod);
+      bestBase = Math.max(10 + dexMod, ...nonMonkCandidates);
+    }
+    shieldBonus = 2;
+  }
+
+  let total = bestBase + shieldBonus + warforgedBonus;
+  if (hasSimicCarapace) {
+    total += 1;
+  }
+  return total + accessoryAcBonus;
+}
+
+export function getAC(char: CharacterData): number {
+  if (typeof char.armorClass === 'number' && char.armorClass > 0) {
+    return char.armorClass;
+  }
+  return getCalculatedAC(char);
+}
+
+export function getEffectiveSpeed(char: CharacterData): number {
+  let speedBonus = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (!item) continue;
+      if (item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'speed') {
+            speedBonus += Number(eff.value) || 0;
+          }
+        }
+      }
+      if (typeof item.bonusSpeed === 'number') {
+        speedBonus += item.bonusSpeed;
+      }
+    }
+  }
+  return (char.speed || 30) + speedBonus;
+}
+
+export function getAvailableArmorModes(char: CharacterData): ArmorModeOption[] {
+  const dexMod = getModifier(char, 'ЛОВ');
+  const conMod = getModifier(char, 'ТЕЛ');
+  const wisMod = getModifier(char, 'МДР');
+
+  const normRace = (char.race || '').toLowerCase();
+  const normSubrace = (char.subrace || '').toLowerCase();
+  const normClass = (char.className || '').toLowerCase();
+  const normSubclass = (char.subclass || '').toLowerCase();
+  const traits = (char.traitsList || []).map(t => (t.name || '').toLowerCase());
+  const featsText = (char.featuresTraits || '').toLowerCase();
+  const hasTrait = (kw: string) => traits.some(t => t.includes(kw)) || featsText.includes(kw);
+
+  const isWarforged =
+    normRace.includes('кован') ||
+    normRace.includes('warforged') ||
+    normSubrace.includes('кован') ||
+    hasTrait('встроенная защита') ||
+    hasTrait('integrated protection');
+  const warforgedBonus = isWarforged ? 1 : 0;
+
+  const isBarbarian = normClass.includes('варвар') || normClass.includes('barbarian');
+  const isMonk = normClass.includes('монах') || normClass.includes('monk');
+  const isDraconicSorcerer =
+    (normClass.includes('чародей') || normClass.includes('sorcerer')) &&
+    (normSubclass.includes('дракон') || normSubclass.includes('draconic'));
+
+  const isTortle = normRace.includes('тортл') || normRace.includes('tortle') || hasTrait('природный панцирь');
+  const isThrikreen = normRace.includes('трикрин') || normRace.includes('thri-kreen') || normRace.includes('thrikreen');
+  const isLizardfolk = normRace.includes('людоящер') || normRace.includes('lizardfolk') || normRace.includes('lizard');
+  const isLoxodon = normRace.includes('локсодон') || normRace.includes('loxodon');
+  const isAutognome = normRace.includes('автогном') || normRace.includes('autognome');
+  const isLocathah = normRace.includes('локата') || normRace.includes('locathah');
+
+  const options: ArmorModeOption[] = [];
+
+  // 1. Standard Unarmored
+  options.push({
+    key: 'unarmored:standard',
+    name: 'Без доспехов (Стандартная)',
+    ac: 10 + dexMod + warforgedBonus,
+    description: `10 + ЛОВ (${formatModifier(dexMod)})`,
+    category: 'unarmored',
+  });
+
+  // 2. Class Unarmored
+  if (isBarbarian) {
+    options.push({
+      key: 'unarmored:barbarian',
+      name: 'Защита без доспехов (Варвар)',
+      ac: 10 + dexMod + conMod + warforgedBonus,
+      description: `10 + ЛОВ (${formatModifier(dexMod)}) + ТЕЛ (${formatModifier(conMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isMonk) {
+    options.push({
+      key: 'unarmored:monk',
+      name: 'Защита без доспехов (Монах)',
+      ac: 10 + dexMod + wisMod + warforgedBonus,
+      description: `10 + ЛОВ (${formatModifier(dexMod)}) + МДР (${formatModifier(wisMod)}) [без щита]`,
+      category: 'unarmored',
+    });
+  }
+
+  // 3. Racial Natural Armor
+  if (isTortle) {
+    options.push({
+      key: 'unarmored:tortle',
+      name: 'Природный панцирь (Тортл)',
+      ac: 17 + warforgedBonus,
+      description: '17 (фиксированный базовый КД, без ЛОВ)',
+      category: 'unarmored',
+    });
+  }
+
+  if (isThrikreen) {
+    options.push({
+      key: 'unarmored:thrikreen',
+      name: 'Панцирь хамелеона (Трикрин)',
+      ac: 13 + dexMod + warforgedBonus,
+      description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isLizardfolk) {
+    options.push({
+      key: 'unarmored:lizardfolk',
+      name: 'Чешуйчатая кожа (Людоящер)',
+      ac: 13 + dexMod + warforgedBonus,
+      description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isLoxodon) {
+    options.push({
+      key: 'unarmored:loxodon',
+      name: 'Толстая кожа (Локсодон)',
+      ac: 12 + conMod + warforgedBonus,
+      description: `12 + ТЕЛ (${formatModifier(conMod)}) [без ЛОВ]`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isAutognome) {
+    options.push({
+      key: 'unarmored:autognome',
+      name: 'Бронированный корпус (Автогном)',
+      ac: 13 + dexMod + warforgedBonus,
+      description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isLocathah) {
+    options.push({
+      key: 'unarmored:locathah',
+      name: 'Природная чешуя (Локата)',
+      ac: 12 + dexMod + warforgedBonus,
+      description: `12 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isDraconicSorcerer) {
+    options.push({
+      key: 'unarmored:draconic',
+      name: 'Драконья устойчивость (Чародей)',
+      ac: 13 + dexMod + warforgedBonus,
+      description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  // 4. Magic / Spells
+  options.push({
+    key: 'unarmored:mage_armor',
+    name: 'Доспехи мага (Mage Armor)',
+    ac: 13 + dexMod + warforgedBonus,
+    description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+    category: 'unarmored',
+  });
+
+  return options;
+}
+
+export function applyRaceTemplate(
+  char: CharacterData,
+  race: {
+    name: string;
+    speed: number;
+    languages?: string[];
+    abilityBonuses?: Partial<Record<AbilityName, number>>;
+    traits?: { name: string; description: string }[];
+  },
+  subrace?: {
+    name: string;
+    speed?: number;
+    abilityBonuses?: Partial<Record<AbilityName, number>>;
+    traits?: { name: string; description: string }[];
+  }
+): CharacterData {
+  const updated = { ...char };
+  updated.race = subrace ? `${race.name} (${subrace.name})` : race.name;
+  updated.subrace = subrace?.name || '';
+  updated.speed = subrace?.speed || race.speed || 30;
+
+  const newBonuses: Record<AbilityName, number> = { 'СИЛ': 0, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 };
+  if (race.abilityBonuses) {
+    for (const [ab, val] of Object.entries(race.abilityBonuses)) {
+      if (ab in newBonuses) newBonuses[ab as AbilityName] += (val as number);
+    }
+  }
+  if (subrace?.abilityBonuses) {
+    for (const [ab, val] of Object.entries(subrace.abilityBonuses)) {
+      if (ab in newBonuses) newBonuses[ab as AbilityName] += (val as number);
+    }
+  }
+  updated.abilityBonuses = newBonuses;
+
+  const allTraits = [...(race.traits || []), ...(subrace?.traits || [])];
+  if (allTraits.length > 0) {
+    const existingNames = new Set((updated.traitsList || []).map(t => t.name.toLowerCase()));
+    const newItems: TraitItem[] = allTraits
+      .filter(t => !existingNames.has(t.name.toLowerCase()))
+      .map(t => ({
+        id: `race-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        name: t.name,
+        source: `Раса: ${race.name}`,
+        summary: t.name,
+        description: t.description
+      }));
+    updated.traitsList = [...(updated.traitsList || []), ...newItems];
+  }
+
+  return updated;
+}
+
+export function getHPMax(char: CharacterData): number {
+  let eqHp = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'hpMax') {
+            eqHp += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  if (char.hpMax !== null) return Math.max(0, char.hpMax + eqHp);
+  return Math.max(0, eqHp);
+}
+
+export function getSpellSaveDC(char: CharacterData): number {
+  if (!char.spellcastingAbility) return 0;
+  let eqDC = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'spellDC') {
+            eqDC += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  return 8 + calcProficiencyBonus(char.level) + getModifier(char, char.spellcastingAbility) + eqDC;
+}
+
+export function getSpellAttackBonus(char: CharacterData): number {
+  if (!char.spellcastingAbility) return 0;
+  let eqAtk = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'spellAttack') {
+            eqAtk += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  return calcProficiencyBonus(char.level) + getModifier(char, char.spellcastingAbility) + eqAtk;
+}
+
+export function getSpellDamageBonus(char: CharacterData): number {
+  let eqDmg = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'spellDamage') {
+            eqDmg += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  return eqDmg;
+}
+
+export function getSpellAbilityMod(char: CharacterData): number {
+  if (!char.spellcastingAbility) return 0;
+  return getModifier(char, char.spellcastingAbility);
+}
+
+// ── Hit Dice helpers ──
+// Supports both English (1d8) and Russian (1к8) notation
+export function getHitDieSize(hitDice: string): number {
+  const match = hitDice.match(/[dк](\d+)/i);
+  return match ? parseInt(match[1]) : 8;
+}
+
+// Returns the dice notation letter used in the hitDice string ('d' or 'к')
+export function getHitDiceNotation(hitDice: string): string {
+  const match = hitDice.match(/[dк]/i);
+  return match ? match[0].toLowerCase() : 'd';
+}
+
+// Average = (1 + dieSize) / 2, rounded up (e.g. d8 → (1+8)/2 = 4.5 → 5)
+export function getHitDieAverage(hitDice: string): number {
+  const size = getHitDieSize(hitDice);
+  return Math.ceil((1 + size) / 2);
+}
+
+// ── Create empty level-up entry ──
+export function createEmptyLevelUpEntry(level: number): LevelUpEntry {
+  return {
+    level,
+    hpGained: 0,
+    asiAbilities: null,
+    notes: '',
+    newCantrips: [],
+    newSpells: [],
+    newSavingThrowProfs: [],
+    newSkillProfs: [],
+    newSkillExpertise: [],
+    newAttacks: [],
+    newProficienciesText: '',
+    newEquipmentText: '',
+  };
+}
+
+// ── Gender resolution helpers ──
+
+export type BaseGenderChoice = 'Мужской' | 'Женский' | 'Другой';
+
+export function resolveCharacterGender(baseChoice: BaseGenderChoice, customText?: string): string {
+  if (baseChoice === 'Мужской') return 'Мужской';
+  if (baseChoice === 'Женский') return 'Женский';
+  const trimmed = (customText || '').trim();
+  return trimmed || 'Другой';
+}
+
+export function parseCharacterGender(gender?: string): { baseChoice: BaseGenderChoice; customText: string } {
+  if (!gender) return { baseChoice: 'Мужской', customText: '' };
+  const trimmed = gender.trim();
+  if (trimmed === 'Мужской') return { baseChoice: 'Мужской', customText: '' };
+  if (trimmed === 'Женский') return { baseChoice: 'Женский', customText: '' };
+  if (trimmed === 'Другой') return { baseChoice: 'Другой', customText: '' };
+  return { baseChoice: 'Другой', customText: trimmed };
+}
+
+// ── Default Character ──
+
+export function createDefaultCharacter(): CharacterData {
+  const abilityScores: Record<AbilityName, number> = { 'СИЛ': 10, 'ЛОВ': 10, 'ТЕЛ': 10, 'ИНТ': 10, 'МДР': 10, 'ХАР': 10 };
+  const abilityBonuses: Record<AbilityName, number> = { 'СИЛ': 0, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 };
+  const asiBonuses: Record<AbilityName, number> = { 'СИЛ': 0, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 };
+  const savingThrowProficiencies: Record<AbilityName, boolean> = { 'СИЛ': false, 'ЛОВ': false, 'ТЕЛ': false, 'ИНТ': false, 'МДР': false, 'ХАР': false };
+  const skillProficiencies: Record<string, boolean> = {};
+  const skillExpertise: Record<string, boolean> = {};
+  for (const skill of ALL_SKILLS) {
+    skillProficiencies[skill] = false;
+    skillExpertise[skill] = false;
+  }
+
+  return {
+    name: '',
+    className: '',
+    level: 1,
+    background: '',
+    playerName: '',
+    race: '',
+    subrace: '',
+    subclass: '',
+    alignment: '',
+    experiencePoints: 0,
+    inspiration: false,
+    abilityScores,
+    abilityBonuses,
+    asiBonuses,
+    savingThrowProficiencies,
+    skillProficiencies,
+    skillExpertise,
+    armorClass: null,
+    equippedArmor: '',
+    equippedShield: false,
+    equippedSlots: {},
+    customItems: [],
+    initiativeOverride: null,
+    speed: 30,
+    hpMax: null,
+    hpCurrent: 0,
+    hpTemp: 0,
+    hitDice: '',
+    deathSaveSuccesses: 0,
+    deathSaveFailures: 0,
+    attacks: [{ name: '', attackBonus: '', damageAndType: '' }],
+    cp: 0, sp: 0, ep: 0, gp: 0, pp: 0,
+    personalityTraits: '',
+    ideals: '',
+    bonds: '',
+    flaws: '',
+    otherProficienciesLanguages: '',
+    featuresTraits: '',
+    traitsList: [],
+    equipment: '',
+    potions: [],
+    inventoryGear: [],
+    gender: 'Мужской',
+    age: '',
+    height: '',
+    weight: '',
+    eyes: '',
+    skin: '',
+    hair: '',
+    appearance: '',
+    alliesOrganizations: '',
+    additionalFeaturesTraits: '',
+    backstory: '',
+    treasure: '',
+    spellcastingClass: '',
+    spellcastingAbility: '',
+    spellSlots: {},
+    cantrips: [],
+    spellsByLevel: {},
+    levelHistory: [],
+    conditions: [],
+    concentration: null,
+  };
+}
+
+/**
+ * Universal character normalizer ensuring all required fields, sub-objects, and arrays exist.
+ * If armorClass was serialized as the calculatedAC, it preserves armorClass as null so that
+ * live stat, trait, and equipment changes continue to recalculate AC dynamically on the sheet.
+ */
+export function normalizeCharacterData(raw: Partial<CharacterData> | null | undefined): CharacterData {
+  const defaults = createDefaultCharacter();
+  if (!raw) return defaults;
+
+  // Defensive unwrap: if raw is wrapped inside a room/combat snapshot ({ id, name, ..., data: { ... } })
+  const source = (raw && typeof (raw as any).data === 'object' && (raw as any).data !== null && ((raw as any).data.abilityScores || (raw as any).data.className))
+    ? { ...raw, ...(raw as any).data }
+    : raw;
+
+  const rawAC = source.armorClass;
+  const rawCalcAC = (source as Record<string, unknown>).calculatedAC;
+  const isAutoAC = typeof rawCalcAC === 'number' && rawAC === rawCalcAC;
+  const normalizedArmorClass = isAutoAC ? null : (rawAC ?? null);
+
+  return {
+    ...defaults,
+    ...source,
+    armorClass: normalizedArmorClass,
+    abilityScores: { ...defaults.abilityScores, ...(source.abilityScores || {}) },
+    abilityBonuses: { ...defaults.abilityBonuses, ...(source.abilityBonuses || {}) },
+    asiBonuses: { ...defaults.asiBonuses, ...(source.asiBonuses || {}) },
+    savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(source.savingThrowProficiencies || {}) },
+    skillProficiencies: { ...defaults.skillProficiencies, ...(source.skillProficiencies || {}) },
+    skillExpertise: { ...defaults.skillExpertise, ...(source.skillExpertise || {}) },
+    spellSlots: { ...defaults.spellSlots, ...(source.spellSlots || {}) },
+    spellsByLevel: { ...defaults.spellsByLevel, ...(source.spellsByLevel || {}) },
+    attacks: Array.isArray(source.attacks) ? source.attacks : defaults.attacks,
+    cantrips: Array.isArray(source.cantrips) ? source.cantrips : defaults.cantrips,
+    levelHistory: Array.isArray(source.levelHistory) ? source.levelHistory : defaults.levelHistory,
+    conditions: Array.isArray(source.conditions) ? source.conditions : defaults.conditions,
+    concentration: source.concentration !== undefined ? source.concentration : defaults.concentration,
+    potions: Array.isArray(source.potions) ? source.potions : (defaults.potions || []),
+    inventoryGear: Array.isArray(source.inventoryGear) ? source.inventoryGear : (defaults.inventoryGear || []),
+  };
+}
+
+/**
+ * Prepares character object for export (JSON, cloud sync, public share, combat engine).
+ * Evaluates getCalculatedAC and getAC so downstream consumers (combat engine, AI DM)
+ * receive the exact calculated AC without needing to duplicate complex D&D 5e unarmored logic.
+ */
+export function serializeCharacterForExport(char: CharacterData): CharacterData & { calculatedAC: number } {
+  return {
+    ...char,
+    calculatedAC: getCalculatedAC(char),
+    armorClass: getAC(char),
+  };
+}
+
+// ── Class Templates (Level 1) ──
+
+
+export interface ClassTemplate {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  role: string;            // Роль: Танк, Боец, Контроллер, Целитель и т.д.
+  hitDieSize: number;      // 6, 8, 10, 12
+  primaryAbility: string;  // Основная характеристика
+  savingThrowProfs: AbilityName[];
+  skillChoices: number;    // Сколько навыков выбирает из списка
+  skillOptions: string[];  // Доступные навыки
+  recommendedSkills: string[]; // Рекомендуемые/часто выбираемые
+  armorWeaponProfs: string;
+  features: string;        // Умения 1-го уровня
+  equipment: string;       // Типичное снаряжение
+  startingGold: string;    // Стартовое золото
+  spellcasting: {
+    ability: AbilityName | '';
+    isCaster: boolean;
+    isPactMagic: boolean;  // Колдун использует Pact Magic
+    cantripsKnown: number;
+    spellsKnownAt1?: number;
+    spellSlotsAt1?: Record<number, number>;
+    cantripList?: string[];
+    spellListAt1?: string[];
+  };
+  recommendedScores: Record<AbilityName, number>; // Standard array placement
+  typicalAC: number;
+  typicalAttacks: Attack[];
+}
+
+export const CLASS_TEMPLATES: ClassTemplate[] = [
+  {
+    id: 'barbarian',
+    name: 'Варвар',
+    emoji: '🪓',
+    description: 'Свирепый воин, черпающий силу в первобытной ярости. Не носит тяжёлые доспехи — полагается на инстинкты и выносливость.',
+    role: 'Танк / Боец ближнего боя',
+    hitDieSize: 12,
+    primaryAbility: 'СИЛ',
+    savingThrowProfs: ['СИЛ', 'ТЕЛ'],
+    skillChoices: 2,
+    skillOptions: ['Атлетика', 'Выживание', 'Запугивание', 'Природа', 'Проницательность', 'Внимательность', 'Уход за животными'],
+    recommendedSkills: ['Атлетика', 'Внимательность'],
+    armorWeaponProfs: 'Владение: Лёгкие и средние доспехи, щиты, простое и воинское оружие',
+    features: 'Ярость (2 раза)\nБез доспехов: КД = 10 + ЛОВ + ТЕЛ (без брони и щита)',
+    equipment: 'Вариант A: Длинный меч (1d8/1d10 рубящий), 2 метательных топора (1d6 рубящий), Компонентная сумка\nВариант B: Боевой топор (1d8/1d10 рубящий), Ручной арбалет (20 болтов, 1d6 колющий)\nДополнительно: Кожаный доспех, Набор путешественника, 4 метальных топора',
+    startingGold: '2d4 × 10 зм',
+    spellcasting: { ability: '', isCaster: false, isPactMagic: false, cantripsKnown: 0 },
+    recommendedScores: { 'СИЛ': 15, 'ЛОВ': 14, 'ТЕЛ': 13, 'ИНТ': 8, 'МДР': 12, 'ХАР': 10 },
+    typicalAC: 15, // Без доспехов: 10 + 2(ЛОВ) + 2(ТЕЛ) = 14, или кожаный доспех 11+2=13. С Яростью КД выше
+    typicalAttacks: [{ name: 'Длинный меч', attackBonus: '+5', damageAndType: '1d8+3 рубящий (1d10 двуручн.)' }],
+  },
+  {
+    id: 'alt-barbarian',
+    name: 'Альтернативный варвар',
+    emoji: '🪓',
+    description: 'Свирепый боец первобытного происхождения (версия laserllama), использующий Боевые приёмы (Savage Exploits) и ярость.',
+    role: 'Танк / Боец ближнего боя',
+    hitDieSize: 12,
+    primaryAbility: 'СИЛ',
+    savingThrowProfs: ['СИЛ', 'ТЕЛ'],
+    skillChoices: 2,
+    skillOptions: ['Атлетика', 'Выживание', 'Запугивание', 'Природа', 'Проницательность', 'Внимательность', 'Уход за животными'],
+    recommendedSkills: ['Атлетика', 'Внимательность'],
+    armorWeaponProfs: 'Владение: Лёгкие и средние доспехи, щиты, простое и воинское оружие',
+    features: 'Ярость (2 раза, +2 урон)\nЗащита без доспехов: КД = 10 + ЛОВ + ТЕЛ\nБоевые приёмы (Savage Exploits со 2 уровня)',
+    equipment: 'Вариант A: Секира (1d12 рубящий), 2 ручных топора (1d6 рубящий)\nВариант B: Двуручный меч (2d6 рубящий), Простое оружие на выбор\nДополнительно: Набор путешественника, 4 метательных копья',
+    startingGold: '2d4 × 10 зм',
+    spellcasting: { ability: '', isCaster: false, isPactMagic: false, cantripsKnown: 0 },
+    recommendedScores: { 'СИЛ': 15, 'ЛОВ': 14, 'ТЕЛ': 14, 'ИНТ': 8, 'МДР': 12, 'ХАР': 10 },
+    typicalAC: 14,
+    typicalAttacks: [{ name: 'Секира', attackBonus: '+5', damageAndType: '1d12+3 рубящий' }],
+  },
+  {
+    id: 'bard',
+    name: 'Бард',
+    emoji: '🎵',
+    description: 'Мастер песен и магии, разносторонний искатель приключений. Магия через музыку и искусство, поддержка группы.',
+    role: 'Поддержка / Контроллер / Целитель',
+    hitDieSize: 8,
+    primaryAbility: 'ХАР',
+    savingThrowProfs: ['ЛОВ', 'ХАР'],
+    skillChoices: 3,
+    skillOptions: ALL_SKILLS.slice(), // Бард выбирает из любых навыков
+    recommendedSkills: ['Убеждение', 'Обман', 'Выступление'],
+    armorWeaponProfs: 'Владение: Лёгкие доспехи, простое оружие, ручные арбалеты, длинные мечи, рапиры, короткие мечи\nИнструменты: 3 музыкальных инструмента на выбор',
+    features: 'Вдохновение барда (d6, столько раз, сколько мод. ХАР за отдых)\nМагия барда (заклинания)\nКомпетентность (удвоенный бонус мастерства на 2 навыка)',
+    equipment: 'Рапира (1d8 колющий) ИЛИ длинный меч\nДлинный лук (20 стрел, 1d8 колющий)\nКожаный доспех, Кинжал\nМузыкальный инструмент на выбор\nНабор путешественника',
+    startingGold: '5d4 × 5 зм',
+    spellcasting: {
+      ability: 'ХАР',
+      isCaster: true,
+      isPactMagic: false,
+      cantripsKnown: 2,
+      spellsKnownAt1: 4,
+      spellSlotsAt1: { 1: 2 },
+      cantripList: ['Престидижитация', 'Волшебная рука'],
+      spellListAt1: ['Целительное слово', 'Осмеяние Ташы', 'Диссонантный шёпот', 'Лечебное зелье'],
+    },
+    recommendedScores: { 'ХАР': 15, 'ЛОВ': 14, 'ТЕЛ': 13, 'ИНТ': 10, 'МДР': 12, 'СИЛ': 8 },
+    typicalAC: 13,
+    typicalAttacks: [{ name: 'Рапира', attackBonus: '+4', damageAndType: '1d8+2 колющий' }],
+  },
+  {
+    id: 'cleric',
+    name: 'Жрец',
+    emoji: '✝️',
+    description: 'Божественный посланник, черпающий силу от божества. Мощный целитель и поддержка с готовностью к бою.',
+    role: 'Целитель / Поддержка / Танк (жизнь)',
+    hitDieSize: 8,
+    primaryAbility: 'МДР',
+    savingThrowProfs: ['МДР', 'ХАР'],
+    skillChoices: 2,
+    skillOptions: ['История', 'Медицина', 'Проницательность', 'Религия', 'Убеждение'],
+    recommendedSkills: ['Медицина', 'Проницательность'],
+    armorWeaponProfs: 'Владение: Лёгкие и средние доспехи, щиты, простое оружие',
+    features: 'Божественная магия (заклинания)\nДомен божества (определяет доп. заклинания и способности)',
+    equipment: 'Кольчужная рубаха (КД 13) ИЛИ кожаный доспех\nЩит\nСвятой символ\nПростое оружие на выбор (Булава)\nКомпонентная сумка\nНабор путешественника',
+    startingGold: '5d4 × 5 зм',
+    spellcasting: {
+      ability: 'МДР',
+      isCaster: true,
+      isPactMagic: false,
+      cantripsKnown: 3,
+      spellsKnownAt1: 0, // Жрец готовит заклинания
+      spellSlotsAt1: { 1: 2 },
+      cantripList: ['Свет', 'Священное пламя', 'Тауматургия'],
+      spellListAt1: ['Лечебное слово', 'Благословение', 'Щит веры', 'Ведовство'],
+    },
+    recommendedScores: { 'МДР': 15, 'ТЕЛ': 14, 'СИЛ': 13, 'ХАР': 12, 'ИНТ': 10, 'ЛОВ': 8 },
+    typicalAC: 18, // Кольчужная рубаха 13 + щит 2 + ЛОВ(8→-1) = 14... нет, 13+2=15, +1 ЛОВ = 16. С доменом Жизни ещё +1. 16-18
+    typicalAttacks: [{ name: 'Булава', attackBonus: '+4', damageAndType: '1d6+2 дробящий' }],
+  },
+  {
+    id: 'druid',
+    name: 'Друид',
+    emoji: '🌿',
+    description: 'Жрец природы, повелевающий стихиями и зверями. Обличье дикого зверя и природная магия.',
+    role: 'Контроллер / Целитель / Призыватель',
+    hitDieSize: 8,
+    primaryAbility: 'МДР',
+    savingThrowProfs: ['ИНТ', 'МДР'],
+    skillChoices: 2,
+    skillOptions: ['Анализ', 'Природа', 'Внимательность', 'Медицина', 'Проницательность', 'Выживание', 'Уход за животными'],
+    recommendedSkills: ['Выживание', 'Внимательность'],
+    armorWeaponProfs: 'Владение: Лёгкие и средние доспехи (неметаллические), щиты (неметаллические), кинжалы, дротики, посохи, булавы, серпы, арбалеты\nИнструменты: Набор травника',
+    features: 'Друидическая магия (заклинания)\nДикий облик (2 раза, CR 1/4)\nДруидский язык',
+    equipment: 'Кожаный доспех\nЩит (деревянный)\nПосох ИЛИ серп\nКомпонентная сумка (фокус: друидический фокус)\nНабор путешественника\nНабор травника',
+    startingGold: '2d6 × 10 зм',
+    spellcasting: {
+      ability: 'МДР',
+      isCaster: true,
+      isPactMagic: false,
+      cantripsKnown: 2,
+      spellsKnownAt1: 0, // Готовит заклинания
+      spellSlotsAt1: { 1: 2 },
+      cantripList: ['Опутывание', 'Друидское ремесло'],
+      spellListAt1: ['Лечебное слово', 'Громовая волна', 'Обнаружение магии', 'Цепкая лоза'],
+    },
+    recommendedScores: { 'МДР': 15, 'ТЕЛ': 14, 'ЛОВ': 13, 'ИНТ': 12, 'ХАР': 10, 'СИЛ': 8 },
+    typicalAC: 15, // Кожаный доспех 11 + щит 2 + ЛОВ+1 = 14... нет, 11+1+2=14
+    typicalAttacks: [{ name: 'Посох', attackBonus: '+2', damageAndType: '1d6 дробящий' }],
+  },
+  {
+    id: 'fighter',
+    name: 'Воин',
+    emoji: '⚔️',
+    description: 'Универсальный мастер боевых искусств. Больше всех атак, восстановление здоровья, боевые стили.',
+    role: 'Боец / Танк',
+    hitDieSize: 10,
+    primaryAbility: 'СИЛ ИЛИ ЛОВ',
+    savingThrowProfs: ['СИЛ', 'ТЕЛ'],
+    skillChoices: 2,
+    skillOptions: ['Акробатика', 'Анализ', 'Внимательность', 'Выживание', 'Запугивание', 'История', 'Атлетика', 'Уход за животными'],
+    recommendedSkills: ['Атлетика', 'Внимательность'],
+    armorWeaponProfs: 'Владение: Все доспехи, щиты, простое и воинское оружие',
+    features: 'Боевой стиль (на выбор: Оборона, Дуэлянт, Дробящий удар, Великий бой, Защита, Стрельба, Двуручное оружие)\nВторое дыхание (восст. 1d10+ур. хитов, 1/короткий отдых)',
+    equipment: 'Вариант A: Кольчуга (КД 16), Щит, Длинный меч (1d8/1d10)\nВариант B: Кожаный доспех, Длинный лук (1d8), Рапира (1d8) — для ЛОВ-воина\nДополнительно: Лёгкий арбалет (20 болтов), 2 метательных топора, Набор путешественника',
+    startingGold: '5d4 × 10 зм',
+    spellcasting: { ability: '', isCaster: false, isPactMagic: false, cantripsKnown: 0 },
+    recommendedScores: { 'СИЛ': 15, 'ЛОВ': 14, 'ТЕЛ': 13, 'ИНТ': 10, 'МДР': 12, 'ХАР': 8 },
+    typicalAC: 18, // Кольчуга 16 + щит 2
+    typicalAttacks: [{ name: 'Длинный меч', attackBonus: '+5', damageAndType: '1d8+3 рубящий (1d10 двуручн.)' }],
+  },
+  {
+    id: 'monk',
+    name: 'Монах',
+    emoji: '👊',
+    description: 'Мастер боевых искусств, использующий энергию ки. Скорость, оголённые удары и мистические способности.',
+    role: 'Боец / Скаут',
+    hitDieSize: 8,
+    primaryAbility: 'ЛОВ и МДР',
+    savingThrowProfs: ['СИЛ', 'ЛОВ'],
+    skillChoices: 2,
+    skillOptions: ['Акробатика', 'Атлетика', 'История', 'Проницательность', 'Религия', 'Скрытность'],
+    recommendedSkills: ['Акробатика', 'Проницательность'],
+    armorWeaponProfs: 'Владение: Простое оружие, короткие мечи\nИнструменты: Один инструмент или музыкальный инструмент на выбор',
+    features: 'Без доспехов: КД = 10 + ЛОВмод + МДРмод\nБоевые искусства (d4 без оружия, бонусное действие: удар, 10 футов скорости)\nКи: 1 очко (бросок за атаку, Уклонение, Шаг ветра)',
+    equipment: 'Короткий меч (1d6 колющий)\n10 дротиков (1d4 колющий)\nНабор путешественника\nИнструмент на выбор',
+    startingGold: '5d4 зм',
+    spellcasting: { ability: '', isCaster: false, isPactMagic: false, cantripsKnown: 0 },
+    recommendedScores: { 'ЛОВ': 15, 'МДР': 14, 'СИЛ': 13, 'ТЕЛ': 12, 'ИНТ': 10, 'ХАР': 8 },
+    typicalAC: 16, // 10 + 2(ЛОВ) + 2(МДР) при стандартном массиве + расовые бонусы
+    typicalAttacks: [{ name: 'Без оружия', attackBonus: '+4', damageAndType: '1d4+2 дробящий' }, { name: 'Короткий меч', attackBonus: '+4', damageAndType: '1d6+2 колющий' }],
+  },
+  {
+    id: 'paladin',
+    name: 'Паладин',
+    emoji: '🛡️',
+    description: 'Святой воин, связанный священной клятвой. Исцеляет прикосновением, бьёт божественной карой.',
+    role: 'Танк / Целитель / Боец',
+    hitDieSize: 10,
+    primaryAbility: 'СИЛ и ХАР',
+    savingThrowProfs: ['МДР', 'ХАР'],
+    skillChoices: 2,
+    skillOptions: ['Атлетика', 'Проницательность', 'Запугивание', 'Медицина', 'Убеждение', 'Религия'],
+    recommendedSkills: ['Убеждение', 'Атлетика'],
+    armorWeaponProfs: 'Владение: Все доспехи, щиты, простое и воинское оружие',
+    features: 'Божественное чувство (60 фт., обнаружение нежити/потусторонних)\nВозложение рук (ХП = уровень паладина × 5)\nБоевой стиль (Оборона, Дуэлянт, Великий бой, Защита)',
+    equipment: 'Кольчуга (КД 16)\nЩит\nДлинный меч (1d8/1d10 рубящий) ИЛИ боевой топор\n5 копий (1d6 колющий, метательное)\nСвятой символ\nНабор путешественника',
+    startingGold: '5d4 × 10 зм',
+    spellcasting: {
+      ability: 'ХАР',
+      isCaster: true,
+      isPactMagic: false,
+      cantripsKnown: 0,
+      spellsKnownAt1: 0, // Готовит заклинания со 2-го уровня
+      spellSlotsAt1: {},
+      cantripList: [],
+      spellListAt1: [],
+    },
+    recommendedScores: { 'СИЛ': 15, 'ХАР': 14, 'ТЕЛ': 13, 'МДР': 12, 'ИНТ': 8, 'ЛОВ': 10 },
+    typicalAC: 18,
+    typicalAttacks: [{ name: 'Длинный меч', attackBonus: '+5', damageAndType: '1d8+3 рубящий' }],
+  },
+  {
+    id: 'ranger',
+    name: 'Следопыт',
+    emoji: '🏹',
+    description: 'Охотник и следопыт, мастер выживания в дикой природе. Боец дальнего боя с природной магией.',
+    role: 'Боец дальнего боя / Скаут',
+    hitDieSize: 10,
+    primaryAbility: 'ЛОВ и МДР',
+    savingThrowProfs: ['СИЛ', 'ЛОВ'],
+    skillChoices: 3,
+    skillOptions: ['Анализ', 'Атлетика', 'Внимательность', 'Выживание', 'Природа', 'Проницательность', 'Скрытность', 'Уход за животными'],
+    recommendedSkills: ['Выживание', 'Внимательность', 'Скрытность'],
+    armorWeaponProfs: 'Владение: Лёгкие и средние доспехи, щиты, простое и воинское оружие',
+    features: 'Излюбленный враг (доп. урон 2d6, преимущество на отслеживание)\nЕстественный странник (трудная местность, затруднённые поиски пищи)\nБоевой стиль (Стрельба, Оборона, Двуручное оружие, Дуэлянт)',
+    equipment: 'Длинный лук (20 стрел, 1d8 колющий)\nДва коротких меча (1d6 колющий) ИЛИ две рапиры\nЧешуйчатый доспех (КД 14 + ЛОВмод, макс. 2)\nНабор путешественника\nНабор ловушки',
+    startingGold: '5d4 × 10 зм',
+    spellcasting: {
+      ability: 'МДР',
+      isCaster: true,
+      isPactMagic: false,
+      cantripsKnown: 0, // Со 2-го уровня
+      spellsKnownAt1: 0,
+      spellSlotsAt1: {},
+      cantripList: [],
+      spellListAt1: [],
+    },
+    recommendedScores: { 'ЛОВ': 15, 'МДР': 14, 'ТЕЛ': 13, 'СИЛ': 12, 'ИНТ': 10, 'ХАР': 8 },
+    typicalAC: 16, // Чешуйчатый доспех 14 + 2 ЛОВ
+    typicalAttacks: [{ name: 'Длинный лук', attackBonus: '+5', damageAndType: '1d8+2 колющий' }, { name: 'Короткий меч', attackBonus: '+5', damageAndType: '1d6+2 колющий' }],
+  },
+  {
+    id: 'rogue',
+    name: 'Плут',
+    emoji: '🗡️',
+    description: 'Мастер скрытности и ловкости. Скрытая атака наносит огромный урон, а навыки открывают любые двери.',
+    role: 'Скаут / Боец (скрытность)',
+    hitDieSize: 8,
+    primaryAbility: 'ЛОВ',
+    savingThrowProfs: ['ЛОВ', 'ИНТ'],
+    skillChoices: 4,
+    skillOptions: ['Акробатика', 'Атлетика', 'Обман', 'Ловкость рук', 'Проницательность', 'Запугивание', 'Анализ', 'Скрытность', 'Внимательность', 'Выступление'],
+    recommendedSkills: ['Скрытность', 'Ловкость рук', 'Проницательность', 'Обман'],
+    armorWeaponProfs: 'Владение: Лёгкие доспехи, простое оружие, ручные арбалеты, длинные мечи, рапиры, короткие мечи\nИнструменты: Набор вора',
+    features: 'Скрытая атака (1d6, преимущество или союзник рядом)\nЖульничество (компетентность на 2 навыка) — уже учтено как экспертиза\nАрсенал вора (вскрытие замков, обезвреживание ловушек)',
+    equipment: 'Рапира (1d8 колющий) ИЛИ короткий меч\nКороткий лук (20 стрел, 1d6 колющий) ИЛИ короткий меч\nКожаный доспех\n2 кинжала (1d4 колющий)\nНабор вора\nНабор путешественника',
+    startingGold: '4d4 × 10 зм',
+    spellcasting: { ability: '', isCaster: false, isPactMagic: false, cantripsKnown: 0 },
+    recommendedScores: { 'ЛОВ': 15, 'ТЕЛ': 14, 'ХАР': 13, 'ИНТ': 12, 'МДР': 10, 'СИЛ': 8 },
+    typicalAC: 14, // Кожаный доспех 11 + 3(ЛОВ) = 14
+    typicalAttacks: [{ name: 'Рапира', attackBonus: '+5', damageAndType: '1d8+3 колющий + 1d6 скрыт.' }],
+  },
+  {
+    id: 'sorcerer',
+    name: 'Чародей',
+    emoji: '🔮',
+    description: 'Прирождённый маг с магией в крови. Меньше заклинаний, но может видоизменять их на лету метамагией.',
+    role: 'Контроллер / Боец (магия)',
+    hitDieSize: 6,
+    primaryAbility: 'ХАР',
+    savingThrowProfs: ['ТЕЛ', 'ХАР'],
+    skillChoices: 2,
+    skillOptions: ['Анализ', 'Магия', 'Обман', 'Запугивание', 'Убеждение', 'Проницательность'],
+    recommendedSkills: ['Убеждение', 'Магия'],
+    armorWeaponProfs: 'Владение: Простое оружие\nИнструменты: Нет',
+    features: 'Источник магии (происхождение: Драконья кровь, Дикий маг, Бурейная магия и др.)\nМагические очки (1 очко)\nГибкое заклинание (очко → ячейка)\nТихое заклинание (очко → без слов/жестов)',
+    equipment: '2 кинжала (1d4 колющий)\nКомпонентная сумка ИЛИ магический фокус\nНабор путешественника',
+    startingGold: '3d4 × 10 зм',
+    spellcasting: {
+      ability: 'ХАР',
+      isCaster: true,
+      isPactMagic: false,
+      cantripsKnown: 4,
+      spellsKnownAt1: 2,
+      spellSlotsAt1: { 1: 2 },
+      cantripList: ['Огненный снаряд', 'Престидижитация', 'Луч мороза', 'Маленькая иллюзия'],
+      spellListAt1: ['Магический снаряд', 'Щит'],
+    },
+    recommendedScores: { 'ХАР': 15, 'ТЕЛ': 14, 'ЛОВ': 13, 'МДР': 12, 'ИНТ': 10, 'СИЛ': 8 },
+    typicalAC: 13, // Драконья кровь может дать +3 без доспехов, иначе 10+1 ЛОВ
+    typicalAttacks: [{ name: 'Огненный снаряд', attackBonus: '+5', damageAndType: '1d10+3 огонь (дальность)' }],
+  },
+  {
+    id: 'warlock',
+    name: 'Колдун',
+    emoji: '🌑',
+    description: 'Маг, заключивший сделку с могущественным патроном. Мало ячеек, но они восстанавливаются после короткого отдыха.',
+    role: 'Контроллер / Боец (магия)',
+    hitDieSize: 8,
+    primaryAbility: 'ХАР',
+    savingThrowProfs: ['МДР', 'ХАР'],
+    skillChoices: 2,
+    skillOptions: ['Анализ', 'Обман', 'История', 'Запугивание', 'Магия', 'Природа', 'Религия'],
+    recommendedSkills: ['Запугивание', 'Обман'],
+    armorWeaponProfs: 'Владение: Лёгкие доспехи, простое оружие\nИнструменты: Нет',
+    features: 'Пакт с покровителем (Архифей, Демон, Великий Древний и др.)\nМагия пакта (заклинания)\nДар покровителя (доп. заклинание)\nМистическое возрождение (ячеек мало, но восстанавливаются после короткого отдыха)',
+    equipment: 'Лёгкий арбалет (20 болтов, 1d8 колющий)\nКомпонентная сумка ИЛИ магический фокус\nКожаный доспех\n2 кинжала\nНабор путешественника\nРитуальная книга ИЛИ магический фокус',
+    startingGold: '4d4 × 10 зм',
+    spellcasting: {
+      ability: 'ХАР',
+      isCaster: true,
+      isPactMagic: true,
+      cantripsKnown: 2,
+      spellsKnownAt1: 2,
+      spellSlotsAt1: { 1: 1 },
+      cantripList: ['Мистический заряд', 'Престидижитация'],
+      spellListAt1: ['Проклятие гексблейда', 'Чарующий взгляд'],
+    },
+    recommendedScores: { 'ХАР': 15, 'ЛОВ': 14, 'ТЕЛ': 13, 'ИНТ': 12, 'МДР': 10, 'СИЛ': 8 },
+    typicalAC: 13, // Кожаный доспех 11 + 2 ЛОВ
+    typicalAttacks: [{ name: 'Лёгкий арбалет', attackBonus: '+4', damageAndType: '1d8 колющий' }],
+  },
+  {
+    id: 'wizard',
+    name: 'Волшебник',
+    emoji: '📖',
+    description: 'Мастер арканы, изучающий магию через книги и свитки. Самый большой список заклинаний, магическая книга.',
+    role: 'Контроллер / Боец (магия) / Утилити',
+    hitDieSize: 6,
+    primaryAbility: 'ИНТ',
+    savingThrowProfs: ['ИНТ', 'МДР'],
+    skillChoices: 2,
+    skillOptions: ['Анализ', 'История', 'Магия', 'Медицина', 'Природа', 'Проницательность', 'Религия'],
+    recommendedSkills: ['Магия', 'Анализ'],
+    armorWeaponProfs: 'Владение: Кинжалы, дротики, пращи, посохи\nИнструменты: Нет',
+    features: 'Восстановление дуги (восст. ячейку уровня ≤ ИНТмод за короткий отдых)\nКнига заклинаний (6 заклинаний 1-го уровня)',
+    equipment: 'Посох (1d6 дробящий) ИЛИ кинжал\nКомпонентная сумка ИЛИ магический фокус (посох)\nКнига заклинаний\nНабор учёного ИЛИ набор путешественника',
+    startingGold: '4d4 × 10 зм',
+    spellcasting: {
+      ability: 'ИНТ',
+      isCaster: true,
+      isPactMagic: false,
+      cantripsKnown: 3,
+      spellsKnownAt1: 0, // Волшебник готовит из книги
+      spellSlotsAt1: { 1: 2 },
+      cantripList: ['Огненный снаряд', 'Престидижитация', 'Маленькая иллюзия'],
+      spellListAt1: ['Магический снаряд', 'Щит', 'Доспех мага', 'Обнаружение магии', 'Опознание', 'Волна грома'],
+    },
+    recommendedScores: { 'ИНТ': 15, 'ЛОВ': 14, 'ТЕЛ': 13, 'МДР': 12, 'ХАР': 10, 'СИЛ': 8 },
+    typicalAC: 12, // 10 + 2 ЛОВ (без доспехов), Доспех мага временно даёт 13
+    typicalAttacks: [{ name: 'Огненный снаряд', attackBonus: '+5', damageAndType: '1d10+3 огонь' }],
+  },
+  {
+    id: 'artificer',
+    name: 'Изобретатель',
+    emoji: '🔧',
+    description: 'Мастер магических изобретений, создающий зачарованные предметы и механизмы.',
+    role: 'Поддержка / Танк / Мастер артефактов',
+    hitDieSize: 8,
+    primaryAbility: 'ИНТ',
+    savingThrowProfs: ['ТЕЛ', 'ИНТ'],
+    skillChoices: 2,
+    skillOptions: ['Магия', 'История', 'Анализ', 'Медицина', 'Природа', 'Внимательность', 'Ловкость рук'],
+    recommendedSkills: ['Анализ', 'Магия'],
+    armorWeaponProfs: 'Владение: Лёгкие и средние доспехи, щиты, простое оружие, огнестрельное оружие, инструменты вора и жестянщика',
+    features: 'Магический напарник\nСотворение заклинаний изобретателя через инструменты',
+    equipment: 'Булава, легкий арбалет (20 болтов), чешуйчатый доспех, щит, инструменты вора, набор подземелий',
+    startingGold: '5d4 × 10 зм',
+    spellcasting: {
+      ability: 'ИНТ',
+      isCaster: true,
+      isPactMagic: false,
+      cantripsKnown: 2,
+      spellsKnownAt1: 0,
+      spellSlotsAt1: { 1: 2 },
+      cantripList: ['Починка', 'Огненный снаряд'],
+      spellListAt1: ['Исцеляющее слово', 'Доспех мага'],
+    },
+    recommendedScores: { 'ИНТ': 15, 'ТЕЛ': 14, 'ЛОВ': 14, 'МДР': 12, 'СИЛ': 10, 'ХАР': 8 },
+    typicalAC: 16,
+    typicalAttacks: [{ name: 'Булава', attackBonus: '+4', damageAndType: '1d6+2 дробящий' }],
+  },
+];
+
+/** Apply a class template to a fresh character at level 1 */
+export function applyClassTemplate(templateId: string): CharacterData {
+  const template = CLASS_TEMPLATES.find(t => t.id === templateId);
+  if (!template) return createDefaultCharacter();
+
+  const char = createDefaultCharacter();
+  char.className = template.name;
+  char.hitDice = `1d${template.hitDieSize}`;
+
+  // Ability scores from standard array
+  char.abilityScores = { ...template.recommendedScores };
+
+  // Saving throw proficiencies
+  for (const ab of template.savingThrowProfs) {
+    char.savingThrowProficiencies[ab] = true;
+  }
+
+  // Skill proficiencies (recommended)
+  for (const skill of template.recommendedSkills) {
+    if (skill in char.skillProficiencies) {
+      char.skillProficiencies[skill] = true;
+    }
+  }
+  // Rogue expertise at level 1
+  if (templateId === 'rogue') {
+    for (const skill of template.recommendedSkills.slice(0, 2)) {
+      if (skill in char.skillExpertise) {
+        char.skillExpertise[skill] = true;
+      }
+    }
+  }
+
+  // Features
+  char.featuresTraits = template.features;
+
+  // Equipment
+  char.equipment = template.equipment;
+
+  // Proficiencies & languages
+  char.otherProficienciesLanguages = template.armorWeaponProfs;
+
+  // AC
+  char.armorClass = template.typicalAC;
+
+  // HP: max hit die + CON mod at level 1
+  const conMod = calcModifier(char.abilityScores['ТЕЛ']);
+  char.hpMax = template.hitDieSize + conMod;
+  char.hpCurrent = char.hpMax;
+
+  // Attacks
+  char.attacks = template.typicalAttacks.length > 0 ? [...template.typicalAttacks] : [{ name: '', attackBonus: '', damageAndType: '' }];
+
+  // Spellcasting
+  if (template.spellcasting.isCaster) {
+    char.spellcastingClass = template.name;
+    char.spellcastingAbility = template.spellcasting.ability;
+
+    if (template.spellcasting.spellSlotsAt1) {
+      const slots: Record<number, SpellSlotInfo> = {};
+      for (const [lvl, count] of Object.entries(template.spellcasting.spellSlotsAt1)) {
+        slots[Number(lvl)] = { totalSlots: count, expendedSlots: 0 };
+      }
+      char.spellSlots = slots;
+    }
+
+    if (template.spellcasting.cantripList && template.spellcasting.cantripList.length > 0) {
+      char.cantrips = [...template.spellcasting.cantripList];
+    }
+
+    if (template.spellcasting.spellListAt1 && template.spellcasting.spellListAt1.length > 0) {
+      const spells: SpellEntry[] = template.spellcasting.spellListAt1.map(name => ({ name, prepared: true }));
+      char.spellsByLevel = { 1: spells };
+    }
+  }
+
+  // Auto-equip starting armor, shield, and weapons into equippedSlots
+  const slots: Record<string, any> = {};
+  const eqLower = template.equipment.toLowerCase();
+
+  if (eqLower.includes('кольчуга') || eqLower.includes('кольчугу')) {
+    slots.armor = { id: 'tpl-armor', name: 'Кольчуга', slot: 'armor' };
+    char.equippedArmor = 'Кольчуга';
+  } else if (eqLower.includes('чешуйчатый доспех')) {
+    slots.armor = { id: 'tpl-armor', name: 'Чешуйчатый доспех', slot: 'armor' };
+    char.equippedArmor = 'Чешуйчатый доспех';
+  } else if (eqLower.includes('кожаный доспех')) {
+    slots.armor = { id: 'tpl-armor', name: 'Кожаный доспех', slot: 'armor' };
+    char.equippedArmor = 'Кожаный доспех';
+  } else if (eqLower.includes('кольчужная рубаха')) {
+    slots.armor = { id: 'tpl-armor', name: 'Кольчужная рубаха', slot: 'armor' };
+    char.equippedArmor = 'Кольчужная рубаха';
+  }
+
+  if (eqLower.includes('щит')) {
+    slots.offHand = { id: 'tpl-shield', name: 'Щит', slot: 'offHand', isShield: true, bonusAC: 2 };
+    char.equippedShield = true;
+  }
+
+  if (templateId === 'barbarian') {
+    slots.mainHand = { id: 'tpl-main', name: 'Секира', slot: 'mainHand', twoHanded: true };
+  } else if (templateId === 'fighter') {
+    slots.mainHand = { id: 'tpl-main', name: 'Длинный меч', slot: 'mainHand' };
+  } else if (templateId === 'paladin') {
+    slots.mainHand = { id: 'tpl-main', name: 'Длинный меч', slot: 'mainHand' };
+  } else if (templateId === 'ranger') {
+    slots.mainHand = { id: 'tpl-main', name: 'Короткий меч', slot: 'mainHand' };
+    slots.offHand = { id: 'tpl-off', name: 'Короткий меч', slot: 'offHand' };
+  } else if (templateId === 'rogue') {
+    slots.mainHand = { id: 'tpl-main', name: 'Рапира', slot: 'mainHand' };
+  } else if (templateId === 'monk') {
+    slots.mainHand = { id: 'tpl-main', name: 'Короткий меч', slot: 'mainHand' };
+  } else if (templateId === 'cleric') {
+    slots.mainHand = { id: 'tpl-main', name: 'Булава', slot: 'mainHand' };
+  } else if (templateId === 'druid') {
+    slots.mainHand = { id: 'tpl-main', name: 'Скимитар', slot: 'mainHand' };
+  } else if (templateId === 'bard') {
+    slots.mainHand = { id: 'tpl-main', name: 'Рапира', slot: 'mainHand' };
+  } else if (templateId === 'artificer') {
+    slots.mainHand = { id: 'tpl-main', name: 'Булава', slot: 'mainHand' };
+  } else if (templateId === 'wizard') {
+    slots.mainHand = { id: 'tpl-main', name: 'Боевой посох', slot: 'mainHand' };
+  } else if (templateId === 'warlock') {
+    slots.mainHand = { id: 'tpl-main', name: 'Кинжал', slot: 'mainHand' };
+  } else if (templateId === 'sorcerer') {
+    slots.mainHand = { id: 'tpl-main', name: 'Кинжал', slot: 'mainHand' };
+  }
+
+  char.equippedSlots = slots;
+
+  return char;
+}
+
+// ── Example Characters ──
+
+export function createExampleWarrior(): CharacterData {
+  const char = createDefaultCharacter();
+  char.name = 'Торин Каменный Щит';
+  char.className = 'Воин';
+  char.level = 5;
+  char.background = 'Солдат';
+  char.playerName = 'Алексей';
+  char.race = 'Дворф (Горный)';
+  char.alignment = 'Законно-добрый';
+  char.experiencePoints = 6500;
+  char.inspiration = true;
+  char.abilityScores = { 'СИЛ': 16, 'ЛОВ': 10, 'ТЕЛ': 14, 'ИНТ': 8, 'МДР': 12, 'ХАР': 10 };
+  char.abilityBonuses = { 'СИЛ': 2, 'ЛОВ': 0, 'ТЕЛ': 2, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 };
+  char.asiBonuses = { 'СИЛ': 2, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 };
+  char.savingThrowProficiencies = { 'СИЛ': true, 'ЛОВ': false, 'ТЕЛ': true, 'ИНТ': false, 'МДР': false, 'ХАР': false };
+  char.skillProficiencies = {
+    'Акробатика': false, 'Анализ': false, 'Атлетика': true,
+    'Внимательность': true, 'Выживание': false, 'Выступление': false,
+    'Запугивание': true, 'История': false, 'Ловкость рук': false,
+    'Магия': false, 'Медицина': false, 'Обман': false,
+    'Природа': false, 'Проницательность': false, 'Религия': false,
+    'Скрытность': false, 'Убеждение': false, 'Уход за животными': false,
+  };
+  char.armorClass = 18;
+  char.speed = 25;
+  char.hpMax = 49;
+  char.hpCurrent = 49;
+  char.hitDice = '5d10';
+  char.attacks = [
+    { name: 'Боевой топор +1', attackBonus: '+7', damageAndType: '1d8+4 рубящий' },
+    { name: 'Ручной арбалет', attackBonus: '+5', damageAndType: '1d6 колющий' },
+  ];
+  char.cp = 47; char.sp = 12; char.gp = 85; char.pp = 2;
+  char.personalityTraits = 'Я всегда планирую заранее, даже в самых простых ситуациях.';
+  char.ideals = 'Честь — превыше всего. Моё слово — закон.';
+  char.bonds = 'Я сражаюсь за тех, кто не может постоять за себя.';
+  char.flaws = 'Я слишком упрям и редко меняю своё решение.';
+  char.otherProficienciesLanguages = 'Владение: Все доспехи, щиты, простое и воинское оружие\nИнструменты: Набор кузнеца\nЯзыки: Общий, Дворфийский';
+  char.featuresTraits = 'Боевой стиль (Оборона)\nВторое дыхание\nДейственный удар\nУлучшение характеристики: СИЛ +2\nДополнительная атака\nДворфья выносливость\nЗнание камня';
+  char.equipment = 'Кольчуга, Щит, Боевой топор +1, Ручной арбалет (20 болтов), Набор путешественника';
+  char.equippedArmor = 'Кольчуга';
+  char.equippedShield = true;
+  char.equippedSlots = {
+    armor: { id: 'war-armor', name: 'Кольчуга', slot: 'armor' },
+    mainHand: { id: 'war-weapon', name: 'Боевой топор', slot: 'mainHand', bonusAttack: 1, bonusDamage: 1 },
+    offHand: { id: 'war-shield', name: 'Щит', slot: 'offHand', isShield: true, bonusAC: 2 },
+  };
+  char.age = '62'; char.height = '135 см'; char.weight = '77 кг';
+  char.eyes = 'Карие'; char.skin = 'Загорелая'; char.hair = 'Рыжая';
+  char.appearance = 'Коренастый дворф с широкой грудью и мощными руками кузнеца. Рыжая борода заплетена в косы.';
+  char.backstory = 'Торин родился в Цитадели Адбар в клане кузнецов. Вместо кузницы выбрал путь воина.';
+  char.levelHistory = [
+    { level: 2, hpGained: 7, asiAbilities: null, notes: 'Действенный удар', newCantrips: [], newSpells: [], newSavingThrowProfs: [], newSkillProfs: [], newSkillExpertise: [], newAttacks: [], newProficienciesText: '', newEquipmentText: '' },
+    { level: 3, hpGained: 7, asiAbilities: null, notes: 'Архетип воина: Мастер боевых искусств', newCantrips: [], newSpells: [], newSavingThrowProfs: [], newSkillProfs: [], newSkillExpertise: [], newAttacks: [], newProficienciesText: '', newEquipmentText: '' },
+    { level: 4, hpGained: 7, asiAbilities: ['СИЛ', 'СИЛ'], notes: 'Улучшение характеристики', newCantrips: [], newSpells: [], newSavingThrowProfs: [], newSkillProfs: [], newSkillExpertise: [], newAttacks: [], newProficienciesText: '', newEquipmentText: '' },
+    { level: 5, hpGained: 9, asiAbilities: null, notes: 'Дополнительная атака', newCantrips: [], newSpells: [], newSavingThrowProfs: [], newSkillProfs: [], newSkillExpertise: [], newAttacks: [], newProficienciesText: '', newEquipmentText: '' },
+  ];
+  return char;
+}
+
+export function createExampleWizard(): CharacterData {
+  const char = createDefaultCharacter();
+  char.name = 'Элара Звёздный Ветер';
+  char.className = 'Волшебник';
+  char.level = 5;
+  char.background = 'Мудрец';
+  char.playerName = 'Мария';
+  char.race = 'Высший эльф';
+  char.alignment = 'Хаотично-добрый';
+  char.abilityScores = { 'СИЛ': 8, 'ЛОВ': 14, 'ТЕЛ': 12, 'ИНТ': 17, 'МДР': 12, 'ХАР': 10 };
+  char.abilityBonuses = { 'СИЛ': 0, 'ЛОВ': 2, 'ТЕЛ': 0, 'ИНТ': 1, 'МДР': 0, 'ХАР': 0 };
+  char.asiBonuses = { 'СИЛ': 0, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 2, 'МДР': 0, 'ХАР': 0 };
+  char.savingThrowProficiencies = { 'СИЛ': false, 'ЛОВ': false, 'ТЕЛ': false, 'ИНТ': true, 'МДР': true, 'ХАР': false };
+  char.skillProficiencies = {
+    'Акробатика': false, 'Анализ': true, 'Атлетика': false,
+    'Внимательность': false, 'Выживание': false, 'Выступление': false,
+    'Запугивание': false, 'История': true, 'Ловкость рук': false,
+    'Магия': true, 'Медицина': false, 'Обман': false,
+    'Природа': false, 'Проницательность': true, 'Религия': true,
+    'Скрытность': false, 'Убеждение': false, 'Уход за животными': false,
+  };
+  char.armorClass = 12;
+  char.speed = 30;
+  char.hpMax = 28;
+  char.hpCurrent = 28;
+  char.hitDice = '5d6';
+  char.attacks = [{ name: 'Огненный снаряд', attackBonus: '+7', damageAndType: '1d10+4 огонь' }];
+  char.equippedSlots = {
+    mainHand: { id: 'wiz-staff', name: 'Боевой посох', slot: 'mainHand' },
+  };
+  char.sp = 8; char.gp = 42;
+  char.personalityTraits = 'Я одержима знаниями и всегда ищу новые заклинания.';
+  char.ideals = 'Знание должно быть свободным.';
+  char.bonds = 'Древний гримуар моей наставницы — моя самая ценная вещь.';
+  char.flaws = 'Я легко отвлекаюсь на интересные магические феномены.';
+  char.otherProficienciesLanguages = 'Кинжалы, дротики, пращи, посохи\nЯзыки: Общий, Эльфийский, Драконий';
+  char.featuresTraits = 'Восстановление дуги\nЗачарование\nТрадиция: Школа Воплощения\nУлучшение характеристики: ИНТ +2';
+  char.equipment = 'Посох, Компонентная сумка, Книга заклинаний, Набор учёного';
+  char.age = '125'; char.height = '170 см'; char.weight = '59 кг';
+  char.eyes = 'Серебристые'; char.skin = 'Бледная'; char.hair = 'Чёрная с серебром';
+  char.spellcastingClass = 'Волшебник';
+  char.spellcastingAbility = 'ИНТ';
+  char.spellSlots = { 1: { totalSlots: 4, expendedSlots: 0 }, 2: { totalSlots: 3, expendedSlots: 0 }, 3: { totalSlots: 2, expendedSlots: 0 } };
+  char.cantrips = ['Огненный снаряд', 'Маленькая иллюзия', 'Престидижитация', 'Луч мороза'];
+  char.spellsByLevel = {
+    1: [{ name: 'Опознание', prepared: true }, { name: 'Магический снаряд', prepared: true }, { name: 'Щит', prepared: true }, { name: 'Доспех мага', prepared: true }, { name: 'Обнаружение магии', prepared: true }, { name: 'Волна грома', prepared: false }],
+    2: [{ name: 'Невидимость', prepared: true }, { name: 'Паутина', prepared: true }, { name: 'Туманный шаг', prepared: true }],
+    3: [{ name: 'Огненный шар', prepared: true }, { name: 'Молния', prepared: true }],
+  };
+  char.levelHistory = [
+    { level: 2, hpGained: 5, asiAbilities: null, notes: 'Традиция волшебства: Школа Воплощения', newCantrips: [], newSpells: [], newSavingThrowProfs: [], newSkillProfs: [], newSkillExpertise: [], newAttacks: [], newProficienciesText: '', newEquipmentText: '' },
+    { level: 3, hpGained: 5, asiAbilities: null, notes: 'Заклинания 2 уровня', newCantrips: [], newSpells: [{ level: 2, name: 'Невидимость', prepared: true }, { level: 2, name: 'Паутина', prepared: true }, { level: 2, name: 'Туманный шаг', prepared: true }], newSavingThrowProfs: [], newSkillProfs: [], newSkillExpertise: [], newAttacks: [], newProficienciesText: '', newEquipmentText: '' },
+    { level: 4, hpGained: 5, asiAbilities: ['ИНТ', 'ИНТ'], notes: 'Улучшение характеристики', newCantrips: [], newSpells: [], newSavingThrowProfs: [], newSkillProfs: [], newSkillExpertise: [], newAttacks: [], newProficienciesText: '', newEquipmentText: '' },
+    { level: 5, hpGained: 5, asiAbilities: null, notes: 'Заклинания 3 уровня', newCantrips: [], newSpells: [{ level: 3, name: 'Огненный шар', prepared: true }, { level: 3, name: 'Молния', prepared: true }], newSavingThrowProfs: [], newSkillProfs: [], newSkillExpertise: [], newAttacks: [], newProficienciesText: '', newEquipmentText: '' },
+  ];
+  return char;
+}
+
+export { calculateWizardAC } from './ac-calculator';

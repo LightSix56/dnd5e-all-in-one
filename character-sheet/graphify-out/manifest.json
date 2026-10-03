@@ -1,0 +1,1622 @@
+{
+  "eslint.config.mjs": {
+    "mtime": 1788423223.5908167,
+    "seen": 1788767676.255562,
+    "ast_hash": "c011988f3f49e03f84c466119ba73683",
+    "semantic_hash": "c011988f3f49e03f84c466119ba73683"
+  },
+  "next.config.ts": {
+    "mtime": 1790184614.9053235,
+    "seen": 1790184991.185298,
+    "ast_hash": "058225ea1989a588d6515eea6fd2be92",
+    "semantic_hash": ""
+  },
+  "package.json": {
+    "mtime": 1790174656.2969942,
+    "seen": 1790174847.43075,
+    "ast_hash": "2d2a6f5a274f806a9b49469a6c722942",
+    "semantic_hash": ""
+  },
+  "postcss.config.mjs": {
+    "mtime": 1788423223.599409,
+    "seen": 1788767676.2555804,
+    "ast_hash": "675899342e765a4d16acd75a53389101",
+    "semantic_hash": "675899342e765a4d16acd75a53389101"
+  },
+  "scripts/build_classes.py": {
+    "mtime": 1788424104.3832905,
+    "seen": 1788767676.255583,
+    "ast_hash": "1f4cb6419ebcc4cbe424d378af929717",
+    "semantic_hash": "1f4cb6419ebcc4cbe424d378af929717"
+  },
+  "scripts/build_compendium.py": {
+    "mtime": 1788423943.5563393,
+    "seen": 1788767676.255585,
+    "ast_hash": "29cd416492fa44645ed3219e964aea45",
+    "semantic_hash": "29cd416492fa44645ed3219e964aea45"
+  },
+  "scripts/build_feats.py": {
+    "mtime": 1788424157.1320944,
+    "seen": 1788767676.2555873,
+    "ast_hash": "d4121ba31060cfec55a390503f30f1a4",
+    "semantic_hash": "d4121ba31060cfec55a390503f30f1a4"
+  },
+  "scripts/build_full_compendium.py": {
+    "mtime": 1788424009.8114254,
+    "seen": 1788767676.2555895,
+    "ast_hash": "7bdeac38d65ab2b766e40bc421a44cf7",
+    "semantic_hash": "7bdeac38d65ab2b766e40bc421a44cf7"
+  },
+  "scripts/build_full_races.py": {
+    "mtime": 1788430995.4909134,
+    "seen": 1788767676.2555914,
+    "ast_hash": "829a46c8e853db8471f3f3649aedfbd8",
+    "semantic_hash": "829a46c8e853db8471f3f3649aedfbd8"
+  },
+  "scripts/build_progression.py": {
+    "mtime": 1788429250.9661102,
+    "seen": 1788767676.2555935,
+    "ast_hash": "320eec893e00774b89b613e4cbc5d60c",
+    "semantic_hash": "320eec893e00774b89b613e4cbc5d60c"
+  },
+  "scripts/build_race_progression.py": {
+    "mtime": 1788430114.9289882,
+    "seen": 1788767676.2555954,
+    "ast_hash": "f924b9dcd79ea7c5466c3f82b9a99ac2",
+    "semantic_hash": "f924b9dcd79ea7c5466c3f82b9a99ac2"
+  },
+  "scripts/build_races.py": {
+    "mtime": 1788424040.5404074,
+    "seen": 1788767676.255598,
+    "ast_hash": "87b54743225cf476f9c33f6f658cda90",
+    "semantic_hash": "87b54743225cf476f9c33f6f658cda90"
+  },
+  "scripts/mobile-visual-audit.mjs": {
+    "mtime": 1788765824.969111,
+    "seen": 1788767676.2556002,
+    "ast_hash": "e54bd8b9942e1854e08e99a7e117fad5",
+    "semantic_hash": "e54bd8b9942e1854e08e99a7e117fad5"
+  },
+  "src/app/api/auth/callback/route.ts": {
+    "mtime": 1788434885.2889237,
+    "seen": 1788767676.255602,
+    "ast_hash": "bc008e25cc4d6cb7438a4ebdf021d4db",
+    "semantic_hash": "bc008e25cc4d6cb7438a4ebdf021d4db"
+  },
+  "src/app/api/auth/signout/route.ts": {
+    "mtime": 1788434780.811867,
+    "seen": 1788767676.2556043,
+    "ast_hash": "79bbf07205f286e7eb796cfa27029dd5",
+    "semantic_hash": "79bbf07205f286e7eb796cfa27029dd5"
+  },
+  "src/app/api/characters/route.ts": {
+    "mtime": 1789376045.511274,
+    "seen": 1789376306.1902137,
+    "ast_hash": "37d372e4363f01421d14b81c5d39b2f5",
+    "semantic_hash": ""
+  },
+  "src/app/api/export-docx/route.ts": {
+    "mtime": 1788434859.4907255,
+    "seen": 1788767676.2556083,
+    "ast_hash": "1888e85511cc6caa6323503dc4c92b57",
+    "semantic_hash": "1888e85511cc6caa6323503dc4c92b57"
+  },
+  "src/app/api/share/[code]/route.ts": {
+    "mtime": 1788770096.6091025,
+    "seen": 1788770630.6857808,
+    "ast_hash": "6e83ede3a7e064c4ba2a7bc3fa83d8b6",
+    "semantic_hash": ""
+  },
+  "src/app/api/share/route.ts": {
+    "mtime": 1788770005.8597667,
+    "seen": 1788770630.6857858,
+    "ast_hash": "7b2a08fcf31721360ba167418891627a",
+    "semantic_hash": ""
+  },
+  "src/app/api/upload-portrait/route.ts": {
+    "mtime": 1789038216.89677,
+    "seen": 1789038550.3695138,
+    "ast_hash": "42328871179fba0a3916ac533615f5a1",
+    "semantic_hash": ""
+  },
+  "src/app/layout.tsx": {
+    "mtime": 1789305462.0794623,
+    "seen": 1789306243.1118212,
+    "ast_hash": "b3b846d7671c184b95a1fc1376c0afee",
+    "semantic_hash": ""
+  },
+  "src/app/page.tsx": {
+    "mtime": 1790187567.1992464,
+    "seen": 1790187794.2502334,
+    "ast_hash": "8fc1edb45a6bbc9389e03c412f0377d9",
+    "semantic_hash": ""
+  },
+  "src/app/share/[code]/page.tsx": {
+    "mtime": 1790187602.5560274,
+    "seen": 1790187794.2502377,
+    "ast_hash": "ae95544552cf742fbfb31747b678167b",
+    "semantic_hash": ""
+  },
+  "src/app/sitemap.ts": {
+    "mtime": 1788597770.0171907,
+    "seen": 1788767676.255623,
+    "ast_hash": "dad1b5a313dc1e03bce7050bec38aa97",
+    "semantic_hash": "dad1b5a313dc1e03bce7050bec38aa97"
+  },
+  "src/components/compendium/AutocompleteInput.tsx": {
+    "mtime": 1789309167.03225,
+    "seen": 1789309391.3649836,
+    "ast_hash": "87e801812ea5f867bc32f88758f19033",
+    "semantic_hash": ""
+  },
+  "src/components/compendium/ClassSelectorModal.tsx": {
+    "mtime": 1789207614.1839576,
+    "seen": 1789207836.1946957,
+    "ast_hash": "02575c3b7ff0f5f6fd8b109a4960212c",
+    "semantic_hash": ""
+  },
+  "src/components/compendium/CompendiumModals.tsx": {
+    "mtime": 1789207639.668655,
+    "seen": 1789207836.1947,
+    "ast_hash": "67a55ee0defd82d53e9332f84bd514d7",
+    "semantic_hash": ""
+  },
+  "src/components/compendium/ItemDetailModal.tsx": {
+    "mtime": 1789307084.2304327,
+    "seen": 1789307565.7409763,
+    "ast_hash": "168bacefc7f9b89a9ba9208610c1face",
+    "semantic_hash": ""
+  },
+  "src/components/compendium/RaceSelectorModal.tsx": {
+    "mtime": 1789311914.2711802,
+    "seen": 1789312153.0621932,
+    "ast_hash": "66960fc79d7bff1d87b27970917c2cb7",
+    "semantic_hash": ""
+  },
+  "src/components/compendium/SubclassSelectorModal.tsx": {
+    "mtime": 1789207620.9183776,
+    "seen": 1789207836.1947095,
+    "ast_hash": "310ba7141602ae7ca8d3595bffcc6388",
+    "semantic_hash": ""
+  },
+  "src/components/dnd-icons.tsx": {
+    "mtime": 1789307339.2162797,
+    "seen": 1789307565.7418506,
+    "ast_hash": "f4380c1005b8031a1f4217c9e6019b72",
+    "semantic_hash": ""
+  },
+  "src/components/tools/CharacterGridModal.tsx": {
+    "mtime": 1789376061.444119,
+    "seen": 1789376306.1994214,
+    "ast_hash": "3067d210a75843cd6e8877528a557318",
+    "semantic_hash": ""
+  },
+  "src/components/tools/NameGeneratorModal.tsx": {
+    "mtime": 1790187621.8494344,
+    "seen": 1790187794.2550623,
+    "ast_hash": "113b4755873fed5335cdd4d4c828e77a",
+    "semantic_hash": ""
+  },
+  "src/components/tools/ShareModal.tsx": {
+    "mtime": 1790187537.135362,
+    "seen": 1790187794.2550647,
+    "ast_hash": "8cc4cf736e845cc81f216fbcf2c56a3f",
+    "semantic_hash": ""
+  },
+  "src/components/tools/StatsCalculatorModal.tsx": {
+    "mtime": 1789311932.167996,
+    "seen": 1789312153.0676146,
+    "ast_hash": "dc94c7cde7f9c11ad983445937353c01",
+    "semantic_hash": ""
+  },
+  "src/components/tools/index.ts": {
+    "mtime": 1788609309.2898576,
+    "seen": 1788767676.2556472,
+    "ast_hash": "11810eb189ef1a9f8a04c1521c9c8bba",
+    "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
+  },
+  "src/components/wizard/CharacterCreationWizardModal.tsx": {
+    "mtime": 1790178879.9863646,
+    "seen": 1790179274.7869284,
+    "ast_hash": "a321b4234d2bee19b26a71c453e19825",
+    "semantic_hash": ""
+  },
+  "src/components/wizard/wizard-helpers.ts": {
+    "mtime": 1789985218.814257,
+    "seen": 1789985834.486294,
+    "ast_hash": "6681626c6bac21e570d579be88b75461",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/backgrounds.ts": {
+    "mtime": 1789298086.153231,
+    "seen": 1789298322.6328347,
+    "ast_hash": "f3d8d7ff2a083395e8dc55d168de1feb",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/class-progression.ts": {
+    "mtime": 1789836559.1085505,
+    "seen": 1789836612.2565975,
+    "ast_hash": "72b8364be7a4cc6c05316d0ceafdd5e4",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/class-spells.ts": {
+    "mtime": 1789050502.9540715,
+    "seen": 1789051049.4459212,
+    "ast_hash": "28da220c4745e54a927a9e9558d021cc",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/classes.ts": {
+    "mtime": 1789832042.9590638,
+    "seen": 1789832355.1707108,
+    "ast_hash": "bc469438cd8148c7a4de82988392962b",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/feats.ts": {
+    "mtime": 1789201900.7284274,
+    "seen": 1789202225.8056896,
+    "ast_hash": "ef7f9740b520c0c37d87e49795e60c1d",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/index.ts": {
+    "mtime": 1789021775.7386475,
+    "seen": 1789023729.2985861,
+    "ast_hash": "56823f47a1051a16a6d55a96675434d7",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/items.ts": {
+    "mtime": 1789309098.2470229,
+    "seen": 1789309391.3768296,
+    "ast_hash": "6bd06021c45d2adeff5f07612f9d5785",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/names-data.ts": {
+    "mtime": 1789300097.800314,
+    "seen": 1789300321.904251,
+    "ast_hash": "d866dde653ba89cd9d47439cad809bfc",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/race-progression.ts": {
+    "mtime": 1788430123.5209017,
+    "seen": 1788767676.2556708,
+    "ast_hash": "7053fca1ba992917922ee14cbe255d8e",
+    "semantic_hash": "7053fca1ba992917922ee14cbe255d8e"
+  },
+  "src/data/compendium/races.ts": {
+    "mtime": 1789137814.8615127,
+    "seen": 1789138524.8227415,
+    "ast_hash": "7eb8f0c868c33bd42663b85999f043fd",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells.ts": {
+    "mtime": 1789199794.6121986,
+    "seen": 1789199874.5768392,
+    "ast_hash": "ba3c93bd7a4a0c791c137305eb50a477",
+    "semantic_hash": ""
+  },
+  "src/data/dnd-spells.ts": {
+    "mtime": 1788424186.7583575,
+    "seen": 1788767676.2556767,
+    "ast_hash": "35d56e460ec49b28d70c23f64127d65b",
+    "semantic_hash": "35d56e460ec49b28d70c23f64127d65b"
+  },
+  "src/data/dnd-traits.ts": {
+    "mtime": 1789836565.8866062,
+    "seen": 1789836612.2650476,
+    "ast_hash": "ff7daa4e8d4a75ae9d6a33ccd5eba032",
+    "semantic_hash": ""
+  },
+  "src/data/dnd-weapons.ts": {
+    "mtime": 1789310002.7809765,
+    "seen": 1789310521.909743,
+    "ast_hash": "c04979da9c805ae91813172335b305c4",
+    "semantic_hash": ""
+  },
+  "src/lib/dnd-types.ts": {
+    "mtime": 1790339556.2745814,
+    "seen": 1790340423.148827,
+    "ast_hash": "1ab9a1d426c31e4b05141cdd9a353956",
+    "semantic_hash": ""
+  },
+  "src/lib/supabase/client.ts": {
+    "mtime": 1788423223.6425788,
+    "seen": 1788767676.2556846,
+    "ast_hash": "c44c40c019538c76d22c3d6efea8fa40",
+    "semantic_hash": "c44c40c019538c76d22c3d6efea8fa40"
+  },
+  "src/lib/supabase/middleware.ts": {
+    "mtime": 1788423223.6425788,
+    "seen": 1788767676.2556868,
+    "ast_hash": "9070d8500cc6e03a94ca0c79fb6a7b20",
+    "semantic_hash": "9070d8500cc6e03a94ca0c79fb6a7b20"
+  },
+  "src/lib/supabase/server.ts": {
+    "mtime": 1788423223.6425788,
+    "seen": 1788767676.2556887,
+    "ast_hash": "0e1083eb94e413d612df91a52f276fed",
+    "semantic_hash": "0e1083eb94e413d612df91a52f276fed"
+  },
+  "src/lib/utils.ts": {
+    "mtime": 1790187519.6013024,
+    "seen": 1790187794.2659369,
+    "ast_hash": "dbb211187e4960409dcb16c442dbd5cd",
+    "semantic_hash": ""
+  },
+  "src/middleware.ts": {
+    "mtime": 1788602222.203025,
+    "seen": 1788767676.2556925,
+    "ast_hash": "602dfc934e5aa7692b6271e4b9212f2d",
+    "semantic_hash": "602dfc934e5aa7692b6271e4b9212f2d"
+  },
+  "tailwind.config.ts": {
+    "mtime": 1790174664.0949793,
+    "seen": 1790174847.4463468,
+    "ast_hash": "0cb8d7042373183eee7efb6262d55db7",
+    "semantic_hash": ""
+  },
+  "test/level-up-arcane.test.ts": {
+    "mtime": 1788762897.6418889,
+    "seen": 1788767676.255697,
+    "ast_hash": "f91e0158b596016e5fcb67625885c9b8",
+    "semantic_hash": "f91e0158b596016e5fcb67625885c9b8"
+  },
+  "test/level-up-divine.test.ts": {
+    "mtime": 1788762897.6463702,
+    "seen": 1788767676.255699,
+    "ast_hash": "5947cc18bbdb0df44dd247ee31c6f541",
+    "semantic_hash": "5947cc18bbdb0df44dd247ee31c6f541"
+  },
+  "test/level-up-martial.test.ts": {
+    "mtime": 1788762897.6476743,
+    "seen": 1788767676.255701,
+    "ast_hash": "5755a00603a35e70eb5014dd671e651f",
+    "semantic_hash": "5755a00603a35e70eb5014dd671e651f"
+  },
+  "test/subclass-selection-rules.test.ts": {
+    "mtime": 1788762897.6487255,
+    "seen": 1788767676.2557027,
+    "ast_hash": "ea55cfad76f5c516667ffda7ccbae01a",
+    "semantic_hash": "ea55cfad76f5c516667ffda7ccbae01a"
+  },
+  "test/wizard-engine-adversarial.test.ts": {
+    "mtime": 1789137140.7234564,
+    "seen": 1789137249.9934826,
+    "ast_hash": "f0117bf4fa1062b442dcb2c5ee5cc5ab",
+    "semantic_hash": ""
+  },
+  "tsconfig.json": {
+    "mtime": 1788423223.6516292,
+    "seen": 1788767676.2557068,
+    "ast_hash": "f22272b2d73081c86e26ecb388faff25",
+    "semantic_hash": "f22272b2d73081c86e26ecb388faff25"
+  },
+  "playwright.config.ts": {
+    "mtime": 1788768801.7677858,
+    "seen": 1788768857.5434442,
+    "ast_hash": "e58748281fbbf9bd96c72a690c1f036d",
+    "semantic_hash": ""
+  },
+  ".agents/agents/adversarial-breaker/agent.md": {
+    "mtime": 1788617068.6569102,
+    "seen": 1788768857.562638,
+    "ast_hash": "620f022a934467fa7f895f77e1204257",
+    "semantic_hash": ""
+  },
+  ".agents/agents/adversarial-fixer/agent.md": {
+    "mtime": 1788617081.2618735,
+    "seen": 1788768857.5626419,
+    "ast_hash": "cfe82561668915b315d1a27447fa057a",
+    "semantic_hash": ""
+  },
+  ".agents/rules/graphify.md": {
+    "mtime": 1788767649.896441,
+    "seen": 1788768857.562645,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/adversarial-breaker/SKILL.md": {
+    "mtime": 1788617213.9029381,
+    "seen": 1788768857.5626478,
+    "ast_hash": "043cb6b332fcc18dcc52f928c20bf7bb",
+    "semantic_hash": ""
+  },
+  ".agents/skills/adversarial-fixer/SKILL.md": {
+    "mtime": 1788617213.9039378,
+    "seen": 1788768857.5626507,
+    "ast_hash": "ea08e678cab2d65c8a03256d8dccda0a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/adversarial-loop/SKILL.md": {
+    "mtime": 1788617213.9049366,
+    "seen": 1788768857.5626533,
+    "ast_hash": "a875e9f513befbbdb6471bb560928833",
+    "semantic_hash": ""
+  },
+  ".agents/workflows/graphify.md": {
+    "mtime": 1788767649.898455,
+    "seen": 1788768857.5626554,
+    "ast_hash": "a831cf3669f1e6ab85d8a80ebe655f99",
+    "semantic_hash": ""
+  },
+  "AGENTS.md": {
+    "mtime": 1789129581.3386023,
+    "seen": 1789130249.5145636,
+    "ast_hash": "63ccd2464003572a6141715685a92843",
+    "semantic_hash": ""
+  },
+  "docs/TECH_SPEC.md": {
+    "mtime": 1788762897.600754,
+    "seen": 1788768857.5626605,
+    "ast_hash": "0c55279966f5e3efe7a47862f06f4e86",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-05-comprehensive-style-and-input-audit.md": {
+    "mtime": 1788612344.3206742,
+    "seen": 1788768857.5626628,
+    "ast_hash": "bfaa5c4f16dcacf2d1f5f0c39a0beeb6",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-07-mobile-responsive-overhaul.md": {
+    "mtime": 1788763921.801687,
+    "seen": 1788768857.5626652,
+    "ast_hash": "8c5cae658d93781ff3afa7a6471e0bd1",
+    "semantic_hash": ""
+  },
+  "e2e/README.md": {
+    "mtime": 1788768804.2524183,
+    "seen": 1788768857.5626678,
+    "ast_hash": "51244adf61647d097c7b719ce96681d5",
+    "semantic_hash": ""
+  },
+  "public/robots.txt": {
+    "mtime": 1788597773.0189805,
+    "seen": 1788768857.56267,
+    "ast_hash": "89ddc04c2731d59fab150dff92b05477",
+    "semantic_hash": ""
+  },
+  "public/yandex_3080a71c935865ef.html": {
+    "mtime": 1788602424.9241343,
+    "seen": 1788768857.5626726,
+    "ast_hash": "09822dd4156667818a4bbd713b015483",
+    "semantic_hash": ""
+  },
+  "public/android-chrome-192x192.png": {
+    "mtime": 1788423223.599409,
+    "seen": 1788768857.562675,
+    "ast_hash": "6606ee116cd8399c059f2c30a2def832",
+    "semantic_hash": ""
+  },
+  "public/android-chrome-512x512.png": {
+    "mtime": 1788423223.6022584,
+    "seen": 1788768857.5626779,
+    "ast_hash": "8288f68175ce1ee8549c9b3016cff7bb",
+    "semantic_hash": ""
+  },
+  "public/apple-touch-icon.png": {
+    "mtime": 1788423223.6022584,
+    "seen": 1788768857.5626802,
+    "ast_hash": "84403ae5c300f97eccbe94755a1b2df6",
+    "semantic_hash": ""
+  },
+  "public/book-bg.webp": {
+    "mtime": 1788423223.606097,
+    "seen": 1788768857.5626829,
+    "ast_hash": "01d2a386968e853b4b0c0a7b813f5885",
+    "semantic_hash": ""
+  },
+  "public/favicon-16x16.png": {
+    "mtime": 1788423223.6077197,
+    "seen": 1788768857.5626855,
+    "ast_hash": "9c1edb9d9ebe4f512a209793ef45afae",
+    "semantic_hash": ""
+  },
+  "public/favicon-32x32.png": {
+    "mtime": 1788423223.6077197,
+    "seen": 1788768857.562688,
+    "ast_hash": "856fe28bbdbc14a855822ce672b1ada2",
+    "semantic_hash": ""
+  },
+  "public/logo.svg": {
+    "mtime": 1788423223.6117418,
+    "seen": 1788768857.562695,
+    "ast_hash": "42f46ee1967225126315578016f0f9b6",
+    "semantic_hash": ""
+  },
+  "src/lib/share-store.ts": {
+    "mtime": 1788769972.6849413,
+    "seen": 1788770630.6952467,
+    "ast_hash": "d59c2f7c0b8b9b5709543b080b679758",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md": {
+    "mtime": 1788769043.777567,
+    "seen": 1788770630.7028995,
+    "ast_hash": "c8a7f1d34be629fb64a6549a2edbd071",
+    "semantic_hash": ""
+  },
+  "test/wizard-level1-choices.test.ts": {
+    "mtime": 1788783851.6198187,
+    "seen": 1788785411.6230326,
+    "ast_hash": "fd83d6662adcbbb0fe94d7ebcbf6e8f4",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-07-character-creation-wizard-full-options-plan.md": {
+    "mtime": 1788782235.746535,
+    "seen": 1788785411.6270595,
+    "ast_hash": "826280d8d8f2e0fd1fdc43b5e28c2336",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-07-character-creation-wizard-full-options-design.md": {
+    "mtime": 1788782219.6836195,
+    "seen": 1788785411.6277149,
+    "ast_hash": "147adf747461f439b3a6115878812725",
+    "semantic_hash": ""
+  },
+  "src/components/levelup/level-up-choices.ts": {
+    "mtime": 1789835535.7634952,
+    "seen": 1789835623.9622655,
+    "ast_hash": "8b2cb4994809d56e7ef16119c3ebb3b5",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/auto-spells-engine.ts": {
+    "mtime": 1789051543.321678,
+    "seen": 1789051816.4716566,
+    "ast_hash": "1d09188a6ebaf655eba068913d55be0a",
+    "semantic_hash": ""
+  },
+  "test/auto-spells-engine.test.ts": {
+    "mtime": 1788801499.151978,
+    "seen": 1788801808.0494316,
+    "ast_hash": "1ddbd7665f33611efb895050c3df21e8",
+    "semantic_hash": ""
+  },
+  "test/level-up-choices.test.ts": {
+    "mtime": 1789049861.4399652,
+    "seen": 1789049979.0963073,
+    "ast_hash": "5e480ffba92169c1a963a9997ae503f4",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-07-level-up-mechanics-and-spells-plan.md": {
+    "mtime": 1788801194.3458083,
+    "seen": 1788801808.0563712,
+    "ast_hash": "6dbac697e9040a2c76b6a3ea72e20c96",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-07-level-up-mechanics-and-spells-design.md": {
+    "mtime": 1788801174.9654846,
+    "seen": 1788801808.0569928,
+    "ast_hash": "82513a2e3d33354559e0c697854a3c09",
+    "semantic_hash": ""
+  },
+  "src/components/levelup/LevelUpModal.tsx": {
+    "mtime": 1789835552.1289191,
+    "seen": 1789835623.9622602,
+    "ast_hash": "c337c57e72fda6d0e27dea4e69d1be06",
+    "semantic_hash": ""
+  },
+  "src/hooks/useEscapeKey.ts": {
+    "mtime": 1788967154.1615026,
+    "seen": 1788967505.142695,
+    "ast_hash": "c4a2030cfacc2175c850e921d07af636",
+    "semantic_hash": ""
+  },
+  "test/css-ux-standards.test.mjs": {
+    "mtime": 1788966338.0407622,
+    "seen": 1788967505.1453068,
+    "ast_hash": "f18df11e7b1438bbf40035a93feca830",
+    "semantic_hash": ""
+  },
+  "test/escape-key-and-keyboard-rolls.test.ts": {
+    "mtime": 1789304404.4222043,
+    "seen": 1789304668.1775815,
+    "ast_hash": "6473796dbdfd74275304e4b6d1573690",
+    "semantic_hash": ""
+  },
+  "test/hit-targets.test.ts": {
+    "mtime": 1789294023.6535795,
+    "seen": 1789295336.0905972,
+    "ast_hash": "c4c2a92c61d80c4e16239edc8dc5e0d5",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-09-ux-web-guidelines-enhancements-plan.md": {
+    "mtime": 1788966148.9242837,
+    "seen": 1788967505.153035,
+    "ast_hash": "afbb118b9dce60cf044fd83813975baf",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-09-ux-web-guidelines-enhancements-design.md": {
+    "mtime": 1788966122.6222908,
+    "seen": 1788967505.1536658,
+    "ast_hash": "bd7447e2389f52e727be2562d070acd9",
+    "semantic_hash": ""
+  },
+  "test/auth-form-and-images.test.ts": {
+    "mtime": 1789304413.69379,
+    "seen": 1789304668.1713312,
+    "ast_hash": "2ee86821a6be916c8aef4d1719f7972b",
+    "semantic_hash": ""
+  },
+  "e2e/ux-enhancements.spec.ts": {
+    "mtime": 1788970279.1782053,
+    "seen": 1788970487.2469618,
+    "ast_hash": "203d1ca8eedc67f6d41f66822751c623",
+    "semantic_hash": ""
+  },
+  "test/dice-spring-physics.test.ts": {
+    "mtime": 1789294521.5935938,
+    "seen": 1789295336.086897,
+    "ast_hash": "52908adfc2152b3d04fc66094a0bd5d7",
+    "semantic_hash": ""
+  },
+  "test/empty-states.test.ts": {
+    "mtime": 1790179922.273302,
+    "seen": 1790180123.276515,
+    "ast_hash": "ef0fc0b8dfbae079ab4890da54e9e0ce",
+    "semantic_hash": ""
+  },
+  "test/header-menu.test.ts": {
+    "mtime": 1789294511.869529,
+    "seen": 1789295336.090593,
+    "ast_hash": "56e4c74fa3b4da7326c0dc23715a4cfd",
+    "semantic_hash": ""
+  },
+  "test/materiality-and-tactility.test.ts": {
+    "mtime": 1788969419.5840547,
+    "seen": 1788970487.2737272,
+    "ast_hash": "e2deacc7830be019b86459b8c1c97995",
+    "semantic_hash": ""
+  },
+  "test/sliding-tabs.test.ts": {
+    "mtime": 1789294517.0223553,
+    "seen": 1789295336.094551,
+    "ast_hash": "3b8976994f3fa670a937a10f2229c190",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-09-premium-medieval-design-enhancements-plan.md": {
+    "mtime": 1788969302.0711472,
+    "seen": 1788970487.2806563,
+    "ast_hash": "878785e36dd313b8b52e199dee2a8c1d",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-09-premium-medieval-design-enhancements-design.md": {
+    "mtime": 1788969229.5978782,
+    "seen": 1788970487.2823727,
+    "ast_hash": "c2ff0d94b20150adc7682bf14d0c2a92",
+    "semantic_hash": ""
+  },
+  "e2e/warlock-level-up.spec.ts": {
+    "mtime": 1789027882.9267836,
+    "seen": 1789028219.74069,
+    "ast_hash": "b727b72ad4c21acd6ea3f4cf57efb6bd",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/warlock-choices.ts": {
+    "mtime": 1789022468.6637323,
+    "seen": 1789023729.3005936,
+    "ast_hash": "d9556f7f6b359974ef5a538c6c39cec5",
+    "semantic_hash": ""
+  },
+  "test/label-alignment.test.ts": {
+    "mtime": 1789294029.0880563,
+    "seen": 1789295336.090601,
+    "ast_hash": "3807ea35ec3a2476cbcce1dbb5d9aa9b",
+    "semantic_hash": ""
+  },
+  "test/level-up-warlock-choices.test.ts": {
+    "mtime": 1789021986.0847802,
+    "seen": 1789023729.3086345,
+    "ast_hash": "a937b3f398561b71007fab553c504eab",
+    "semantic_hash": ""
+  },
+  "test/warlock-choices.test.ts": {
+    "mtime": 1789021724.15618,
+    "seen": 1789023729.3095064,
+    "ast_hash": "5005df05e16172b0a93ca77b87cce386",
+    "semantic_hash": ""
+  },
+  "test/warlock-level-up-flow.test.ts": {
+    "mtime": 1789023008.7949488,
+    "seen": 1789023729.309511,
+    "ast_hash": "d3b84e0a5f11a9d3bb5072785f08a13c",
+    "semantic_hash": ""
+  },
+  "test/warlock-subclasses.test.ts": {
+    "mtime": 1789021907.4346938,
+    "seen": 1789023729.3095145,
+    "ast_hash": "3adcfd72a344c611be9861e3a8948ddc",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-10-warlock-level-up-and-subclasses-plan.md": {
+    "mtime": 1789021608.5883064,
+    "seen": 1789023729.3167255,
+    "ast_hash": "f0bb1b424d07080958ed7feb7607e461",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-10-warlock-level-up-deepening-design.md": {
+    "mtime": 1789021580.329511,
+    "seen": 1789023729.3192108,
+    "ast_hash": "e8a1d34a8cb64f4389b54e47744811d5",
+    "semantic_hash": ""
+  },
+  "test/class-spell-progression.test.ts": {
+    "mtime": 1789025044.265386,
+    "seen": 1789025749.460156,
+    "ast_hash": "4fa9a30921e63fde62106208165ea451",
+    "semantic_hash": ""
+  },
+  "e2e/rogue-level-up.spec.ts": {
+    "mtime": 1789031508.395418,
+    "seen": 1789031726.6435378,
+    "ast_hash": "4a7e4bd84de4d79ae9f46f5551cf095d",
+    "semantic_hash": ""
+  },
+  "test/rogue-subclasses.test.ts": {
+    "mtime": 1789030714.7877817,
+    "seen": 1789031726.6767168,
+    "ast_hash": "b3096d73100d6c2a6f3a6cb967536ce5",
+    "semantic_hash": ""
+  },
+  "test/supabase-characters-api.test.ts": {
+    "mtime": 1789376008.756132,
+    "seen": 1789376306.235445,
+    "ast_hash": "17090a84c0f6dabfe24819499be3b96c",
+    "semantic_hash": ""
+  },
+  "test/share-import.test.ts": {
+    "mtime": 1789043249.5219471,
+    "seen": 1789043492.8197677,
+    "ast_hash": "2861a05819e660bf045d9ba45083b71a",
+    "semantic_hash": ""
+  },
+  "test/paladin-subclasses.test.ts": {
+    "mtime": 1789044153.3698852,
+    "seen": 1789044231.3828986,
+    "ast_hash": "2769ac9e8d47054997291bd08f84986f",
+    "semantic_hash": ""
+  },
+  "test/barbarian-subclasses.test.ts": {
+    "mtime": 1789048093.5715394,
+    "seen": 1789048710.080439,
+    "ast_hash": "19f06733c5f36622bb61eb005e569a2c",
+    "semantic_hash": ""
+  },
+  "test/ranger-subclasses.test.ts": {
+    "mtime": 1789047608.5306501,
+    "seen": 1789047680.8677573,
+    "ast_hash": "2ead638937d9d83ab58d1efc6f73e8f7",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-dndsu.ts": {
+    "mtime": 1789049774.6295946,
+    "seen": 1789049979.0697424,
+    "ast_hash": "89bb35333475a75557fa3acc4b267f98",
+    "semantic_hash": ""
+  },
+  ".agents/skills/dnd-su-parser/SKILL.md": {
+    "mtime": 1789049960.794204,
+    "seen": 1789049979.1073608,
+    "ast_hash": "066fb84e210a7aa9abc09262bd95c5b1",
+    "semantic_hash": ""
+  },
+  "test/sorcerer-subclasses.test.ts": {
+    "mtime": 1789050976.5619628,
+    "seen": 1789051049.4583683,
+    "ast_hash": "0f5a23e66825c8f141178d1910469215",
+    "semantic_hash": ""
+  },
+  "test/wizard-subclasses.test.ts": {
+    "mtime": 1789051462.1743958,
+    "seen": 1789051816.48787,
+    "ast_hash": "ddf389b26571dc85bd0508eeaa509e48",
+    "semantic_hash": ""
+  },
+  "scripts/generate-sheet.ts": {
+    "mtime": 1789055756.049008,
+    "seen": 1789056068.812802,
+    "ast_hash": "1a9cae9bbaabea02d1756b4bf0b65a5d",
+    "semantic_hash": ""
+  },
+  "src/lib/pdf-export.ts": {
+    "mtime": 1790175358.9192488,
+    "seen": 1790175402.4712102,
+    "ast_hash": "e0002ebdcb599e368383f4dcb3dc6047",
+    "semantic_hash": ""
+  },
+  "public/templates/dnd5e_character_sheet_rus.pdf": {
+    "mtime": 1789052220.679241,
+    "seen": 1789056068.829107,
+    "ast_hash": "73db575723424aa57a0b5e53e207c926",
+    "semantic_hash": ""
+  },
+  "src/app/api/export-pdf/route.ts": {
+    "mtime": 1789122701.1445854,
+    "seen": 1789123414.5265899,
+    "ast_hash": "2469d3e8e4b0dc7744bf8ac5c73b8c76",
+    "semantic_hash": ""
+  },
+  "test/export-pdf.test.ts": {
+    "mtime": 1790175190.339293,
+    "seen": 1790175402.476026,
+    "ast_hash": "fa9c77eed70ccb7be51a961113990d63",
+    "semantic_hash": ""
+  },
+  "test/fighter-subclasses.test.ts": {
+    "mtime": 1789124153.427486,
+    "seen": 1789124408.5649307,
+    "ast_hash": "a5f46b29c733254c99aef6fa4c13934f",
+    "semantic_hash": ""
+  },
+  "test/cleric-subclasses.test.ts": {
+    "mtime": 1789124808.464784,
+    "seen": 1789125010.7328563,
+    "ast_hash": "b71322d2b3a01b1bab1c050f2acebdbb",
+    "semantic_hash": ""
+  },
+  "test/bard-subclasses.test.ts": {
+    "mtime": 1789125388.003774,
+    "seen": 1789125533.0943005,
+    "ast_hash": "59a3b585371095f34c748ad2f77edae6",
+    "semantic_hash": ""
+  },
+  "test/druid-subclasses.test.ts": {
+    "mtime": 1789125733.931218,
+    "seen": 1789125886.6804638,
+    "ast_hash": "33b77802cc9ce50ec2309f5ebfa99b82",
+    "semantic_hash": ""
+  },
+  "test/monk-subclasses.test.ts": {
+    "mtime": 1789126077.1776426,
+    "seen": 1789126244.0527656,
+    "ast_hash": "0c097e16a07781b6c73dba3fb9a90ebd",
+    "semantic_hash": ""
+  },
+  "test/artificer-subclasses.test.ts": {
+    "mtime": 1789126382.5938883,
+    "seen": 1789126955.2023683,
+    "ast_hash": "4c331bfee7803cc9505c93b2d1c0e42c",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-dndsu-backgrounds.ts": {
+    "mtime": 1789128240.659079,
+    "seen": 1789129232.7898893,
+    "ast_hash": "936dce91e06b33073fa4d7492da3d414",
+    "semantic_hash": ""
+  },
+  "test/fetch-dndsu-backgrounds.test.ts": {
+    "mtime": 1789127641.8749976,
+    "seen": 1789127859.5703535,
+    "ast_hash": "6fc49a161daebdd1116dbd12a97953d2",
+    "semantic_hash": ""
+  },
+  "scripts/add-background-batch.ts": {
+    "mtime": 1789128355.5604937,
+    "seen": 1789129232.786401,
+    "ast_hash": "db09af8e2105cfb2298c2d9d12536732",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-class-equipment.ts": {
+    "mtime": 1789129668.3414156,
+    "seen": 1789130249.4834838,
+    "ast_hash": "54b901185c3c05f367ceef7834721d7c",
+    "semantic_hash": ""
+  },
+  "test/class-starting-equipment.test.ts": {
+    "mtime": 1789832225.0288918,
+    "seen": 1789832355.1780882,
+    "ast_hash": "e38cae0a121ed735df480d718a086df9",
+    "semantic_hash": ""
+  },
+  "test/fetch-class-equipment.test.ts": {
+    "mtime": 1789129651.8704212,
+    "seen": 1789130249.5038388,
+    "ast_hash": "ecae1b0111506bf088cd80dcea0138b4",
+    "semantic_hash": ""
+  },
+  "test/attack-auto-scaling.test.ts": {
+    "mtime": 1789130695.265265,
+    "seen": 1789131101.3444538,
+    "ast_hash": "cb04a6f690bd65685b186f5328a58733",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-dndsu-weapons.ts": {
+    "mtime": 1789131511.4722998,
+    "seen": 1789132173.6616364,
+    "ast_hash": "811057c0aa1a23d4a74df91447166ccc",
+    "semantic_hash": ""
+  },
+  "test/fetch-dndsu-weapons.test.ts": {
+    "mtime": 1789132080.1924863,
+    "seen": 1789132173.6824033,
+    "ast_hash": "88e1b7ea0050c23e7c5a16c82401b45d",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-dndsu-races.ts": {
+    "mtime": 1789134842.9172134,
+    "seen": 1789134931.3952577,
+    "ast_hash": "4d99fdb41e1dc2178c68adcfff7169cb",
+    "semantic_hash": ""
+  },
+  "scripts/merge-races-compendium.ts": {
+    "mtime": 1789138317.2504642,
+    "seen": 1789138524.8096125,
+    "ast_hash": "a345315db8e001ef1be9e884c1f49071",
+    "semantic_hash": ""
+  },
+  "scripts/modularize-races.js": {
+    "mtime": 1789137811.6227343,
+    "seen": 1789138524.8099515,
+    "ast_hash": "a3a06dacbe21ed06051a4798207f1656",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/core.ts": {
+    "mtime": 1789137814.8487377,
+    "seen": 1789138524.822747,
+    "ast_hash": "07d2d5617171a60f6dcdb284a388f90f",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/index.ts": {
+    "mtime": 1789310987.5463836,
+    "seen": 1789311405.2512815,
+    "ast_hash": "258b9a12f9c0778caa61e7fa36a1e70c",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/multiverse.ts": {
+    "mtime": 1789138322.575076,
+    "seen": 1789138524.8227541,
+    "ast_hash": "6e36bb49f564c43094ce690b4d547aa5",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/supplements.ts": {
+    "mtime": 1789832015.6722553,
+    "seen": 1789832355.172169,
+    "ast_hash": "198db33ac28c315e9422be47bc932c7a",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/types.ts": {
+    "mtime": 1789310981.1803598,
+    "seen": 1789311405.25158,
+    "ast_hash": "4aa1a361d1817db656623b2f262b0974",
+    "semantic_hash": ""
+  },
+  "test/races-compendium-adversarial.test.ts": {
+    "mtime": 1789311221.5072453,
+    "seen": 1789311405.2752898,
+    "ast_hash": "9216616924fb211d8d401ffb26e59ceb",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-11-races-compendium-merge.md": {
+    "mtime": 1789137771.9941392,
+    "seen": 1789138524.851031,
+    "ast_hash": "2cb98ccf61fdb98897cad08212042b15",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-11-races-compendium-merge-design.md": {
+    "mtime": 1789137545.2832396,
+    "seen": 1789138524.8530278,
+    "ast_hash": "3b21341de118f500bcdf01e42e055063",
+    "semantic_hash": ""
+  },
+  "scripts/parse-dndsu-spells.ts": {
+    "mtime": 1789194318.5692408,
+    "seen": 1789194431.6439507,
+    "ast_hash": "9155bc11d685649dfc84023db6f0014c",
+    "semantic_hash": ""
+  },
+  "scripts/build-spells-compendium.ts": {
+    "mtime": 1789199788.3159125,
+    "seen": 1789199874.5582447,
+    "ast_hash": "0fe066abdfde064611f01992573a8f82",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/cantrips.ts": {
+    "mtime": 1789199794.5742795,
+    "seen": 1789199874.5768445,
+    "ast_hash": "8180c79c44ef921c3c978100dd1c0d50",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/index.ts": {
+    "mtime": 1789199794.6121986,
+    "seen": 1789199874.5768478,
+    "ast_hash": "2dd7916e24aa06d70a95d264be59e9d1",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-1.ts": {
+    "mtime": 1789199794.578359,
+    "seen": 1789199874.576851,
+    "ast_hash": "ebcf9966493e01bd3b821f279d06a6fa",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-2.ts": {
+    "mtime": 1789199794.58396,
+    "seen": 1789199874.576861,
+    "ast_hash": "a69f3ec57453d83e81d9059e91c673ca",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-3.ts": {
+    "mtime": 1789199794.5892313,
+    "seen": 1789199874.5768638,
+    "ast_hash": "008a32778b612cfb1d1ba2d73c7659bd",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-4.ts": {
+    "mtime": 1789199794.5926952,
+    "seen": 1789199874.5768676,
+    "ast_hash": "4ea3a3e60f70bf5369ad76f3d9f9f8af",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-5.ts": {
+    "mtime": 1789199794.5971732,
+    "seen": 1789199874.5768704,
+    "ast_hash": "aa798fc478a0671920a8ec1df1bbe7f6",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-6.ts": {
+    "mtime": 1789199794.601262,
+    "seen": 1789199874.576873,
+    "ast_hash": "22f7672412058d0b4d977ec612d756d1",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-7.ts": {
+    "mtime": 1789199794.6040254,
+    "seen": 1789199874.5768757,
+    "ast_hash": "10acef66d526734907752a2d275d688d",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-8.ts": {
+    "mtime": 1789199794.605632,
+    "seen": 1789199874.576878,
+    "ast_hash": "458cd2e9488a27fe61c64d05e3aefc46",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-9.ts": {
+    "mtime": 1789199794.6095002,
+    "seen": 1789199874.576881,
+    "ast_hash": "3794796e68c04f2c07aa9c113d0a3577",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/types.ts": {
+    "mtime": 1789199794.571622,
+    "seen": 1789199874.5768836,
+    "ast_hash": "b66a0d095a4746379cb080a74fb2b0f4",
+    "semantic_hash": ""
+  },
+  "scripts/parse-dndsu-feats.ts": {
+    "mtime": 1789200786.6307118,
+    "seen": 1789200886.3573537,
+    "ast_hash": "36b8e886a36cfe6f0494a13e0d2f5723",
+    "semantic_hash": ""
+  },
+  "test/feats-compendium-adversarial.test.ts": {
+    "mtime": 1789200698.909132,
+    "seen": 1789200886.3892126,
+    "ast_hash": "7f22e68649483b2373b6102131f56010",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/feat-prerequisites.ts": {
+    "mtime": 1789203014.5069275,
+    "seen": 1789203190.5892367,
+    "ast_hash": "2988e1bd7311bcfcf917922695e4da67",
+    "semantic_hash": ""
+  },
+  "test/feat-prerequisites.test.ts": {
+    "mtime": 1789202967.387256,
+    "seen": 1789203190.6119509,
+    "ast_hash": "c4903ccc18126f516f41963df7f43401",
+    "semantic_hash": ""
+  },
+  "src/components/gameplay/RestModal.tsx": {
+    "mtime": 1789306967.9951317,
+    "seen": 1789307565.7418737,
+    "ast_hash": "a3bb2b8df6c09c43815075ea92a77b42",
+    "semantic_hash": ""
+  },
+  "test/gameplay-rest-jump-attacks.test.ts": {
+    "mtime": 1789215920.1389744,
+    "seen": 1789216731.1105716,
+    "ast_hash": "0fcf6acb89f5afcab405e99a9bedd07d",
+    "semantic_hash": ""
+  },
+  "test/ac-calculations.test.ts": {
+    "mtime": 1790071463.7661846,
+    "seen": 1790072406.3870623,
+    "ast_hash": "0a79496035df8db4a1d31df78506d894",
+    "semantic_hash": ""
+  },
+  "src/components/equipment/EquipmentPaperDoll.tsx": {
+    "mtime": 1789374834.6329453,
+    "seen": 1789375038.7929702,
+    "ast_hash": "1fff9bc8b97365c168b9de3b6c242de6",
+    "semantic_hash": ""
+  },
+  "src/components/equipment/EquipmentSlotModal.tsx": {
+    "mtime": 1789310320.2971468,
+    "seen": 1789310521.895103,
+    "ast_hash": "67186cb80317ae8bdbae6856ae883fb1",
+    "semantic_hash": ""
+  },
+  "src/lib/equipment-types.ts": {
+    "mtime": 1789374181.996543,
+    "seen": 1789374364.3615336,
+    "ast_hash": "635c2cd6c1a4b28d8882e6035ac1159d",
+    "semantic_hash": ""
+  },
+  "test/equipment-slots.test.ts": {
+    "mtime": 1789373440.6897316,
+    "seen": 1789374364.3719454,
+    "ast_hash": "20299a4dca81ac48e10c6401ab88f84d",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-12-equipment-system.md": {
+    "mtime": 1789230053.0268147,
+    "seen": 1789230709.42936,
+    "ast_hash": "4332bff008b226892850f96745278dc5",
+    "semantic_hash": ""
+  },
+  "public/mannequin.png": {
+    "mtime": 1789373307.2146485,
+    "seen": 1789374364.3997047,
+    "ast_hash": "0b93c9521b25219e3dcc1525af50cff5",
+    "semantic_hash": ""
+  },
+  "test/dual-wield-attacks.test.ts": {
+    "mtime": 1789233323.6290638,
+    "seen": 1789234238.2407644,
+    "ast_hash": "067d847fb47e931549748f978914fab1",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-12-dual-wield-and-equipment-sync.md": {
+    "mtime": 1789232950.0866203,
+    "seen": 1789234238.25712,
+    "ast_hash": "67702c8889581a1c96241769491a38cb",
+    "semantic_hash": ""
+  },
+  "test/custom-items-effects.test.ts": {
+    "mtime": 1789289485.4091601,
+    "seen": 1789290226.575672,
+    "ast_hash": "953597df4f23f988e5b400e78a155525",
+    "semantic_hash": ""
+  },
+  "test/custom-items-integration.test.ts": {
+    "mtime": 1789289748.768897,
+    "seen": 1789290226.575679,
+    "ast_hash": "0487e03cf1df310f294b34e44f8fdf41",
+    "semantic_hash": ""
+  },
+  "test/equipment-slot-modal-effects.test.ts": {
+    "mtime": 1789289828.8498793,
+    "seen": 1789290226.5778425,
+    "ast_hash": "cd6fec813d65c43adb8b30e7abb691e5",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-13-custom-items-effects-engine.md": {
+    "mtime": 1789289396.1970167,
+    "seen": 1789290226.597693,
+    "ast_hash": "ced014dc18c7407319e44e01d81e0829",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-13-custom-items-effects-engine-design.md": {
+    "mtime": 1789289357.3750992,
+    "seen": 1789290226.6005425,
+    "ast_hash": "0e395782c746eb87c775a6572f1d10dc",
+    "semantic_hash": ""
+  },
+  "test/separated-effects.test.ts": {
+    "mtime": 1789291421.8378987,
+    "seen": 1789291687.7137606,
+    "ast_hash": "b137f7c0591ea4f0bc741090d3f8141d",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/SheetFooter.tsx": {
+    "mtime": 1790174668.3454168,
+    "seen": 1790174847.437632,
+    "ast_hash": "084e3d73aa0cdc3852c07f447ece9c5d",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/SheetHeader.tsx": {
+    "mtime": 1789389102.1681616,
+    "seen": 1789389721.6180599,
+    "ast_hash": "b1ea94cf45049e1b8258b283347291b3",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/SheetNavbar.tsx": {
+    "mtime": 1789294481.0317721,
+    "seen": 1789295336.0670025,
+    "ast_hash": "279dd6b0c33b52e0153630d251091aa3",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/SheetUIPrimitives.tsx": {
+    "mtime": 1789293281.3665295,
+    "seen": 1789295336.0670054,
+    "ast_hash": "1333c3f52a6e18a50c145c639c3e56a3",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/modals/SheetModals.tsx": {
+    "mtime": 1789307114.5553725,
+    "seen": 1789307565.74411,
+    "ast_hash": "09d4696198042333a23f14d31638099d",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/pages/DetailsSheetPage.tsx": {
+    "mtime": 1789302226.296151,
+    "seen": 1789302418.1724408,
+    "ast_hash": "81b7d19bfb78377675c9c2e695af0c47",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/pages/MainSheetPage.tsx": {
+    "mtime": 1790179918.8651237,
+    "seen": 1790180123.263186,
+    "ast_hash": "f0691a12dd6d9f0f53c420dbe3106729",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/pages/SpellsSheetPage.tsx": {
+    "mtime": 1789389444.5001786,
+    "seen": 1789389721.6192505,
+    "ast_hash": "0bde6e383eb4cafded417423651e844f",
+    "semantic_hash": ""
+  },
+  "test/sheet-header-navbar.test.ts": {
+    "mtime": 1789294524.7265148,
+    "seen": 1789295336.0945382,
+    "ast_hash": "3ed75c7fdf670ee6ca3abe8ec2a8db75",
+    "semantic_hash": ""
+  },
+  "test/sheet-modals.test.ts": {
+    "mtime": 1789294964.510424,
+    "seen": 1789295336.094542,
+    "ast_hash": "974d9f7257587bcb18bd207ae6fbab59",
+    "semantic_hash": ""
+  },
+  "test/sheet-pages.test.ts": {
+    "mtime": 1789293943.7493527,
+    "seen": 1789295336.094545,
+    "ast_hash": "3c5778b07cbc0ba206651975769c701e",
+    "semantic_hash": ""
+  },
+  "test/sheet-ui-primitives.test.ts": {
+    "mtime": 1789293268.0039854,
+    "seen": 1789295336.0945475,
+    "ast_hash": "4b7f1deb55fcf5ddf73a6510eceabace",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-13-page-decomposition.md": {
+    "mtime": 1789293189.3756733,
+    "seen": 1789295336.1046338,
+    "ast_hash": "f0571c957cbad26ef50bae13f5a68402",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-13-page-decomposition-design.md": {
+    "mtime": 1789293149.7428408,
+    "seen": 1789295336.1068306,
+    "ast_hash": "a5c7656a91a8833531db54492a57c0e1",
+    "semantic_hash": ""
+  },
+  "test/background-choices.test.ts": {
+    "mtime": 1789298246.2521217,
+    "seen": 1789298322.647948,
+    "ast_hash": "8b80536e512c7b3d766b6186daf49ac7",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-dndsu-race-names.ts": {
+    "mtime": 1789299567.2835968,
+    "seen": 1789300321.887004,
+    "ast_hash": "5689e7eda4b562183f37dffd1f04124f",
+    "semantic_hash": ""
+  },
+  "test/race-names-generator.test.ts": {
+    "mtime": 1789302129.189603,
+    "seen": 1789302418.2016082,
+    "ast_hash": "6d863f40dcaa7d00e55416ed77c3aa2f",
+    "semantic_hash": ""
+  },
+  "test/autocomplete-overflow-positioning.test.ts": {
+    "mtime": 1789302940.970373,
+    "seen": 1789303410.2010117,
+    "ast_hash": "82c06d11a718473ef4d5742dedb2886c",
+    "semantic_hash": ""
+  },
+  "src/lib/ac-calculator.ts": {
+    "mtime": 1789305888.7985787,
+    "seen": 1789306243.1318483,
+    "ast_hash": "58f4041185ae69fcc07ab4ace64e598d",
+    "semantic_hash": ""
+  },
+  "test/dynamic-imports.test.ts": {
+    "mtime": 1789305766.4147944,
+    "seen": 1789306243.1399987,
+    "ast_hash": "9f0a537af4b8971433ab77895132f668",
+    "semantic_hash": ""
+  },
+  "test/performance-assets.test.ts": {
+    "mtime": 1789305442.060797,
+    "seen": 1789306243.1466594,
+    "ast_hash": "c6d53062a86d506dcfdaac09a6ee94af",
+    "semantic_hash": ""
+  },
+  "test/spells-autocomplete-internal.test.ts": {
+    "mtime": 1789305481.2565987,
+    "seen": 1789306243.15155,
+    "ast_hash": "9fa698ed8bb12f4b98d64e5fadc41f48",
+    "semantic_hash": ""
+  },
+  "test/tree-shaking-compendium.test.ts": {
+    "mtime": 1789305641.6728919,
+    "seen": 1789306243.1523902,
+    "ast_hash": "1fa8a54157733656459543e68c05cae7",
+    "semantic_hash": ""
+  },
+  "test/dnd-icons-theme.test.ts": {
+    "mtime": 1789307342.344763,
+    "seen": 1789307565.7646897,
+    "ast_hash": "b27ba449076e0031e65aebaf5d072897",
+    "semantic_hash": ""
+  },
+  "test/weapons-catalog.test.ts": {
+    "mtime": 1789309175.9471803,
+    "seen": 1789309391.410071,
+    "ast_hash": "860c097f1ced1d27e4bb21c163b35233",
+    "semantic_hash": ""
+  },
+  "test/weapon-grip.test.ts": {
+    "mtime": 1789309958.1635983,
+    "seen": 1789310521.9426193,
+    "ast_hash": "584d4cd70daae20e9f385b211e83f97d",
+    "semantic_hash": ""
+  },
+  "test/races-mousefolk-ratfolk.test.ts": {
+    "mtime": 1789311870.322628,
+    "seen": 1789312153.0958104,
+    "ast_hash": "cdf1421928efa9def50694858151ced0",
+    "semantic_hash": ""
+  },
+  "src/lib/character-validation.ts": {
+    "mtime": 1789375996.7907846,
+    "seen": 1789376306.2130582,
+    "ast_hash": "e0e67d2abf341d851090008ac5bfd462",
+    "semantic_hash": ""
+  },
+  "src/lib/feat-bonus-engine.ts": {
+    "mtime": 1789377928.5555234,
+    "seen": 1789378136.1959703,
+    "ast_hash": "977ba0f1f77a40918add4479f207230f",
+    "semantic_hash": ""
+  },
+  "test/feat-bonus-engine.test.ts": {
+    "mtime": 1789377117.504974,
+    "seen": 1789378136.2060962,
+    "ast_hash": "0f34846811c46aad6d7145d6600dbc52",
+    "semantic_hash": ""
+  },
+  "test/level-up-feat-choice.test.ts": {
+    "mtime": 1789377164.969098,
+    "seen": 1789378136.2098665,
+    "ast_hash": "7904ee0bf78efb313db87e6f10745ee1",
+    "semantic_hash": ""
+  },
+  "test/wizard-feat-choice.test.ts": {
+    "mtime": 1789377774.7037895,
+    "seen": 1789378136.218173,
+    "ast_hash": "100de6f3459efe34af04a89f05f606ea",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-14-feat-ability-bonus-choice-plan.md": {
+    "mtime": 1789377052.2427747,
+    "seen": 1789378136.2257974,
+    "ast_hash": "040d169996b91a6013b7d42623995492",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-14-feat-ability-bonus-choice-design.md": {
+    "mtime": 1789377038.9086118,
+    "seen": 1789378136.228357,
+    "ast_hash": "b93c5f044663ad7ba80ecfe60b76fd8a",
+    "semantic_hash": ""
+  },
+  "src/components/encyclopedia/BlockHelpButton.tsx": {
+    "mtime": 1789389525.07614,
+    "seen": 1789389721.6162415,
+    "ast_hash": "049f4889eaed4ffa229346410c8b146d",
+    "semantic_hash": ""
+  },
+  "src/components/encyclopedia/DndEncyclopediaModal.tsx": {
+    "mtime": 1789389045.1171267,
+    "seen": 1789389721.616246,
+    "ast_hash": "130afee05035f7e0903d2682211e35bd",
+    "semantic_hash": ""
+  },
+  "src/components/encyclopedia/InteractiveSheetTour.tsx": {
+    "mtime": 1789389021.0217752,
+    "seen": 1789389721.6162496,
+    "ast_hash": "62418a85423a0de9c7e20adbf1d8e45d",
+    "semantic_hash": ""
+  },
+  "src/data/encyclopedia/encyclopedia-content.ts": {
+    "mtime": 1789479095.4183972,
+    "seen": 1789479505.7525322,
+    "ast_hash": "38ab86c870a082b2c7809964766d3ed1",
+    "semantic_hash": ""
+  },
+  "src/data/encyclopedia/encyclopedia-types.ts": {
+    "mtime": 1789388941.76388,
+    "seen": 1789389721.631697,
+    "ast_hash": "f2b2b58698de69d02dc2f2798d0d7a9e",
+    "semantic_hash": ""
+  },
+  "test/encyclopedia-data.test.ts": {
+    "mtime": 1789478865.7270956,
+    "seen": 1789479505.7645817,
+    "ast_hash": "c528fa2fcfc7a70a976dacf3be7c3c8e",
+    "semantic_hash": ""
+  },
+  "test/interactive-tour.test.ts": {
+    "mtime": 1789388995.817781,
+    "seen": 1789389721.646187,
+    "ast_hash": "d253f09ea96d0b5bbc504d96f0e93dc9",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-14-newbie-onboarding-encyclopedia-plan.md": {
+    "mtime": 1789388860.1839044,
+    "seen": 1789389721.6650722,
+    "ast_hash": "6bb88bb506b38fc090653a00dd68af50",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-14-newbie-onboarding-encyclopedia-design.md": {
+    "mtime": 1789388810.467781,
+    "seen": 1789389721.6677043,
+    "ast_hash": "6429d5ff1a97b203bbc65184699572dc",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/barbarian-exploits.ts": {
+    "mtime": 1789831971.0742624,
+    "seen": 1789832355.1705527,
+    "ast_hash": "2b636bc2b857e539f78ec501bb35cff4",
+    "semantic_hash": ""
+  },
+  "test/alternate-barbarian-and-scourgeborne.test.ts": {
+    "mtime": 1789831933.4166627,
+    "seen": 1789832355.1768413,
+    "ast_hash": "1cf4e2aa9e4e289a6bb60b5a4c1a5852",
+    "semantic_hash": ""
+  },
+  "test/level-up-alternate-barbarian-exploits.test.ts": {
+    "mtime": 1789835521.904046,
+    "seen": 1789835623.9765968,
+    "ast_hash": "3d4f29bca1c6630968d042afd95973e7",
+    "semantic_hash": ""
+  },
+  "test/alternate-barbarian-traits.test.ts": {
+    "mtime": 1789835511.9405632,
+    "seen": 1789835623.9716656,
+    "ast_hash": "e02072385552569d6ce3331f76de823f",
+    "semantic_hash": ""
+  },
+  "test/wizard-flexible-asi-and-languages.test.ts": {
+    "mtime": 1789985372.9452689,
+    "seen": 1789985834.5248013,
+    "ast_hash": "1ae892b13cc9646826959a072ab7002f",
+    "semantic_hash": ""
+  },
+  "public/map_annotator.html": {
+    "mtime": 1790024944.929453,
+    "seen": 1790025182.9026818,
+    "ast_hash": "ef11b826b4ba30f6ade89a2b6bc3e768",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-23-cleanup-pdf-conditions.md": {
+    "mtime": 1790174505.4863982,
+    "seen": 1790174847.4599137,
+    "ast_hash": "9b97342b2244a9f20db23b2cceb0d110",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/ConditionsTracker.tsx": {
+    "mtime": 1790176038.9735856,
+    "seen": 1790176335.0053422,
+    "ast_hash": "d80c1b0b94d463b1286f0a9b4403fada",
+    "semantic_hash": ""
+  },
+  "test/conditions-and-concentration.test.ts": {
+    "mtime": 1790176138.809481,
+    "seen": 1790176335.0169957,
+    "ast_hash": "5726932af870e248e112a75448899ccf",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-dndsu-potions.ts": {
+    "mtime": 1790178383.2456722,
+    "seen": 1790178565.4683604,
+    "ast_hash": "3b112727e0e9b5b2ea0bf8262af4e89d",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/potions-data.ts": {
+    "mtime": 1790178299.4814818,
+    "seen": 1790178565.4775815,
+    "ast_hash": "91211f60e37f07d027272c17e650ff22",
+    "semantic_hash": ""
+  },
+  "src/lib/inventory/base-item.ts": {
+    "mtime": 1790178183.1873975,
+    "seen": 1790178565.4823427,
+    "ast_hash": "8a8eed5d5e86f9de8ec2a78b3d74569c",
+    "semantic_hash": ""
+  },
+  "src/lib/inventory/equipment-pack.ts": {
+    "mtime": 1790178261.764811,
+    "seen": 1790178565.4823446,
+    "ast_hash": "3ab28b6b1a874f519df392e65cf3078a",
+    "semantic_hash": ""
+  },
+  "src/lib/inventory/gear-item.ts": {
+    "mtime": 1790178229.083512,
+    "seen": 1790178565.482347,
+    "ast_hash": "80680bce6e06e24c52aada36635cb6d0",
+    "semantic_hash": ""
+  },
+  "src/lib/inventory/index.ts": {
+    "mtime": 1790178823.784437,
+    "seen": 1790179274.7930548,
+    "ast_hash": "836ae8bffc8e02860b35fd2fc2c37b02",
+    "semantic_hash": ""
+  },
+  "src/lib/inventory/item-registry.ts": {
+    "mtime": 1790179061.3971946,
+    "seen": 1790179274.793057,
+    "ast_hash": "d6c292cc139cf20372702b534337c06b",
+    "semantic_hash": ""
+  },
+  "src/lib/inventory/potion-item.ts": {
+    "mtime": 1790179603.8401809,
+    "seen": 1790180123.2721622,
+    "ast_hash": "965760a0f2e503de4f7752ec10ee38a7",
+    "semantic_hash": ""
+  },
+  "test/inventory-oop-and-potions.test.ts": {
+    "mtime": 1790178358.8989437,
+    "seen": 1790178565.488499,
+    "ast_hash": "772b4c463f91c7e7142c41e63121daed",
+    "semantic_hash": ""
+  },
+  "src/lib/inventory/background-equipment-parser.ts": {
+    "mtime": 1790178832.2630503,
+    "seen": 1790179274.7926722,
+    "ast_hash": "25ba3f22975ec7a505467670382607d3",
+    "semantic_hash": ""
+  },
+  "test/background-equipment-granting.test.ts": {
+    "mtime": 1790178897.7584665,
+    "seen": 1790179274.7957492,
+    "ast_hash": "73d01c9648c6413db595ef62e7d2eccf",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/InventoryManager.tsx": {
+    "mtime": 1790179661.764789,
+    "seen": 1790180123.262322,
+    "ast_hash": "c9f171c01f86a23e442826db04e48e2a",
+    "semantic_hash": ""
+  },
+  "test/inventory-ui-and-manager.test.ts": {
+    "mtime": 1790179624.7018769,
+    "seen": 1790180123.278722,
+    "ast_hash": "60c157cc047be19ddb41a2409af5a617",
+    "semantic_hash": ""
+  },
+  "scripts/firewall-helper.js": {
+    "mtime": 1790184558.4155436,
+    "seen": 1790184991.1880703,
+    "ast_hash": "b3a7f84726ae7d006650954f239ed729",
+    "semantic_hash": ""
+  },
+  "scripts/network-banner.js": {
+    "mtime": 1790184537.6857793,
+    "seen": 1790184991.1885884,
+    "ast_hash": "1b3d8f8b76ea750db71518c413f3cd0a",
+    "semantic_hash": ""
+  },
+  "test/character-normalization-resilience.test.ts": {
+    "mtime": 1790339532.8048658,
+    "seen": 1790340423.158296,
+    "ast_hash": "018b2a47b6f6f4b5e8898fa4c75448ec",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-25-core-fixes-character-sheet-and-battle-ai.md": {
+    "mtime": 1790339500.624891,
+    "seen": 1790340423.1918347,
+    "ast_hash": "0384ae095f868949fdff7b8dfb636486",
+    "semantic_hash": ""
+  }
+}

@@ -1,0 +1,1133 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.375rem;
+  --background: #F5E6C8;
+  --foreground: #3C2415;
+  --card: rgba(245, 230, 200, 0.92);
+  --card-foreground: #3C2415;
+  --popover: rgba(245, 230, 200, 0.95);
+  --popover-foreground: #3C2415;
+  --primary: #6B3A2A;
+  --primary-foreground: #FBF0DC;
+  --secondary: rgba(251, 240, 220, 0.6);
+  --secondary-foreground: #3C2415;
+  --muted: #EDE0C8;
+  --muted-foreground: #8B6914;
+  --accent: #C9A84C;
+  --accent-foreground: #2C1810;
+  --destructive: #8B2500;
+  --border: rgba(139, 105, 20, 0.4);
+  --input: rgba(139, 105, 20, 0.3);
+  --ring: #C9A84C;
+  --chart-1: #8B6914;
+  --chart-2: #6B3A2A;
+  --chart-3: #5C3A6E;
+  --chart-4: #8B4513;
+  --chart-5: #A0522D;
+  --sidebar: rgba(44, 24, 16, 0.9);
+  --sidebar-foreground: #FBF0DC;
+  --sidebar-primary: #C9A84C;
+  --sidebar-primary-foreground: #2C1810;
+  --sidebar-accent: rgba(201, 168, 76, 0.15);
+  --sidebar-accent-foreground: #FBF0DC;
+  --sidebar-border: rgba(201, 168, 76, 0.3);
+  --sidebar-ring: #C9A84C;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    font-family: Georgia, "Times New Roman", serif;
+    @apply bg-background text-foreground;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #C9A84C !important;
+  outline-offset: 2px !important;
+}
+
+/* ── Custom Parchment Theme Classes ── */
+
+/* Main book background */
+.parchment-bg {
+  background: url('/book-bg.webp') center center / cover no-repeat fixed;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .parchment-bg {
+    background-attachment: scroll;
+  }
+}
+
+.parchment-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(245, 230, 200, 0.15);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Card / Panel */
+.parchment-card {
+  background: rgba(245, 230, 200, 0.92);
+  border: 2px solid rgba(139, 105, 20, 0.4);
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(60, 36, 21, 0.22), inset 0 1px 0 rgba(255, 240, 200, 0.4);
+  outline: 1px solid rgba(139, 105, 20, 0.15);
+  outline-offset: -5px;
+  position: relative;
+  font-variant-numeric: tabular-nums;
+}
+
+.parchment-card::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(139, 105, 20, 0.12);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Section heading */
+.parchment-heading {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  color: #3C2415;
+  border-bottom: 2px solid rgba(201, 168, 76, 0.5);
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 0 rgba(201, 168, 76, 0.2);
+}
+
+/* Input fields — bottom-line style */
+.parchment-input {
+  width: 100%;
+  height: 28px;
+  padding: 0 6px;
+  font-size: 0.875rem;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #3C2415;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(139, 105, 20, 0.3);
+  outline: none;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.2s;
+}
+
+.parchment-input:focus {
+  border-bottom-color: #C9A84C;
+}
+
+.parchment-input::placeholder {
+  color: rgba(60, 36, 21, 0.35);
+  font-style: italic;
+}
+
+.parchment-input-center {
+  width: 100%;
+  height: 28px;
+  padding: 0 6px;
+  font-size: 0.875rem;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #3C2415;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(139, 105, 20, 0.3);
+  outline: none;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.2s;
+}
+
+.parchment-input-center:focus {
+  border-bottom-color: #C9A84C;
+}
+
+.parchment-input-center::placeholder {
+  color: rgba(60, 36, 21, 0.35);
+  font-style: italic;
+}
+
+/* Textarea — writing area style */
+.parchment-textarea {
+  width: 100%;
+  padding: 6px;
+  font-size: 0.875rem;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #3C2415;
+  background: rgba(251, 240, 220, 0.85);
+  border: 1px solid rgba(201, 168, 76, 0.6);
+  border-radius: 4px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.parchment-textarea:focus {
+  border-color: #C9A84C;
+  box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.35);
+  background: #FFFDF9;
+}
+
+.parchment-textarea::placeholder {
+  color: rgba(139, 105, 20, 0.6);
+  font-style: italic;
+}
+
+/* Boxed input for modals, search bars, and dialogs */
+.parchment-input-boxed {
+  width: 100%;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #3C2415;
+  background: rgba(251, 240, 220, 0.85);
+  border: 1px solid rgba(201, 168, 76, 0.6);
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.parchment-input-boxed:focus {
+  border-color: #C9A84C;
+  box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.35);
+  background: #FFFDF9;
+}
+
+.parchment-input-boxed::placeholder {
+  color: rgba(139, 105, 20, 0.6);
+  font-style: italic;
+}
+
+/* Unified Select style */
+.parchment-select {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #3C2415;
+  background: rgba(251, 240, 220, 0.95);
+  border: 1px solid rgba(201, 168, 76, 0.6);
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.parchment-select:focus {
+  border-color: #C9A84C;
+  box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.35);
+}
+
+.parchment-select option {
+  background: #F5E6C8;
+  color: #3C2415;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+::selection {
+  background: rgba(201, 168, 76, 0.35);
+  color: #3C2415;
+}
+
+/* Remove default browser spin buttons for parchment sheet aesthetic */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* StatInput wrapper label */
+.parchment-label {
+  font-size: 0.6875rem;
+  color: #8B6914;
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0.02em;
+}
+
+/* CalcBadge — wax seal / illuminated manuscript style */
+.calc-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  padding: 2px 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: Georgia, "Times New Roman", serif;
+  border-radius: 3px;
+  background: linear-gradient(145deg, #5C3A6E, #4A2A3E);
+  color: #F5E6C8;
+  border: 2px solid #C9A84C;
+  box-shadow: 0 2px 6px rgba(92, 58, 110, 0.4), inset 0 1px 2px rgba(255,255,255,0.15);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  font-variant-numeric: tabular-nums;
+}
+
+.roll-badge {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.roll-badge:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 2px 10px rgba(201, 168, 76, 0.45), inset 0 1px 2px rgba(255, 240, 200, 0.4);
+}
+
+.roll-badge:active {
+  transform: scale(0.95) translateY(1px);
+}
+
+/* Primary button — leather brown with gold */
+.parchment-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #FBF0DC;
+  background: linear-gradient(180deg, #8B4513, #6B3A2A);
+  border: 1px solid #C9A84C;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(60, 36, 21, 0.25), inset 0 1px 0 rgba(255, 240, 200, 0.4);
+}
+
+.parchment-btn:hover {
+  background: linear-gradient(180deg, #A0522D, #8B4513);
+  box-shadow: 0 2px 12px rgba(201, 168, 76, 0.35);
+}
+
+.parchment-btn:active {
+  transform: scale(0.98) translateY(1px);
+  box-shadow: 0 1px 3px rgba(60, 36, 21, 0.3);
+}
+
+.parchment-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Secondary button — transparent with brown border */
+.parchment-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #6B3A2A;
+  background: transparent;
+  border: 1px solid rgba(107, 58, 42, 0.5);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.parchment-btn-secondary:hover {
+  background: rgba(107, 58, 42, 0.08);
+  border-color: #6B3A2A;
+}
+
+.parchment-btn-secondary:active {
+  transform: scale(0.98) translateY(1px);
+}
+
+/* Header — leather binding */
+.parchment-header {
+  background: rgba(44, 24, 16, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid rgba(201, 168, 76, 0.5);
+  box-shadow: 0 4px 20px rgba(60, 36, 21, 0.5);
+}
+
+.parchment-header h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #D4A957;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.parchment-header p {
+  color: rgba(251, 240, 220, 0.6);
+}
+
+/* Tab strip — leather brown with bookmark tabs */
+.parchment-tabs {
+  background: rgba(107, 58, 42, 0.85);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 4px;
+  padding: 3px;
+}
+
+.parchment-tab-active {
+  background: rgba(245, 230, 200, 0.96);
+  color: #3C2415;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(60, 36, 21, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  border: 1px solid #C9A84C;
+  border-bottom: 2px solid #C9A84C;
+  border-radius: 4px;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.parchment-tab-inactive {
+  background: rgba(60, 36, 21, 0.7);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  color: #F5E6C8;
+  font-family: Georgia, "Times New Roman", serif;
+  border-radius: 4px;
+}
+
+.parchment-tab-inactive:hover {
+  color: #FFF8EB;
+  background: rgba(85, 48, 28, 0.9);
+  border-color: rgba(201, 168, 76, 0.5);
+}
+
+/* Modal overlay */
+.parchment-modal-overlay {
+  background: rgba(26, 15, 10, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+/* Modal content */
+.parchment-modal {
+  background: rgba(245, 230, 200, 0.96);
+  border: 3px solid rgba(201, 168, 76, 0.5);
+  border-radius: 6px;
+  box-shadow: 0 8px 40px rgba(60, 36, 21, 0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+  outline: 2px solid rgba(139, 105, 20, 0.15);
+  outline-offset: -6px;
+}
+
+.parchment-modal h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #3C2415;
+  text-shadow: 0 1px 0 rgba(201, 168, 76, 0.2);
+  border-bottom: 2px solid rgba(201, 168, 76, 0.4);
+  padding-bottom: 8px;
+}
+
+/* Modal section — subtle parchment variation */
+.parchment-modal-section {
+  background: rgba(237, 224, 200, 0.5);
+  border: 1px solid rgba(139, 105, 20, 0.2);
+  border-radius: 3px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.parchment-modal-section-accent {
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 3px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+/* Toast — parchment note */
+.parchment-toast {
+  background: rgba(245, 230, 200, 0.96);
+  border: 2px solid rgba(139, 105, 20, 0.4);
+  border-radius: 3px;
+  box-shadow: 0 4px 16px rgba(60, 36, 21, 0.35);
+}
+
+/* ── Custom Parchment Checkboxes ── */
+
+/* Base checkbox — hidden, styled via label wrapper */
+.parchment-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.parchment-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* The visual box */
+.parchment-checkbox .checkmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(139, 105, 20, 0.5);
+  border-radius: 3px;
+  background: rgba(251, 240, 220, 0.6);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+  font-size: 11px;
+  line-height: 1;
+  color: transparent;
+}
+
+.parchment-checkbox:hover .checkmark {
+  border-color: #C9A84C;
+  background: rgba(201, 168, 76, 0.08);
+}
+
+/* Checked state — filled seal */
+.parchment-checkbox input:checked + .checkmark {
+  background: linear-gradient(145deg, #6B3A2A, #4A2518);
+  border-color: #C9A84C;
+  color: #F5E6C8;
+  box-shadow: 0 1px 4px rgba(60, 36, 21, 0.3), inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+/* The tick mark via CSS */
+.parchment-checkbox input:checked + .checkmark::after {
+  content: '✓';
+  font-size: 11px;
+  font-weight: 700;
+  color: #D4A957;
+  text-shadow: 0 0 3px rgba(212, 169, 87, 0.4);
+}
+
+/* Disabled */
+.parchment-checkbox input:disabled + .checkmark {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.parchment-checkbox input:disabled:checked + .checkmark {
+  opacity: 0.5;
+}
+
+/* Small variant for dense rows */
+.parchment-checkbox-sm .checkmark {
+  width: 14px;
+  height: 14px;
+  border-width: 1.5px;
+  font-size: 9px;
+}
+
+.parchment-checkbox-sm input:checked + .checkmark::after {
+  font-size: 9px;
+}
+
+/* Expertise variant — purple seal when checked */
+.parchment-checkbox-expert input:checked + .checkmark {
+  background: linear-gradient(145deg, #5C3A6E, #3D2548);
+  border-color: #9B7FBF;
+}
+
+.parchment-checkbox-expert input:checked + .checkmark::after {
+  color: #D4B8F0;
+  text-shadow: 0 0 3px rgba(212, 184, 240, 0.4);
+}
+
+/* Select dropdown — parchment style */
+.parchment-select {
+  max-width: 100%;
+  height: 28px;
+  padding: 0 6px;
+  font-size: 0.875rem;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #3C2415;
+  background: rgba(251, 240, 220, 0.7);
+  border: 1px solid rgba(139, 105, 20, 0.3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.parchment-select:focus {
+  border-color: #C9A84C;
+}
+
+.parchment-select option {
+  background: #FBF0DC;
+  color: #3C2415;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+/* Death save circles */
+.death-save-empty {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(139, 105, 20, 0.5);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.death-save-success {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #4a7c3f;
+  background: radial-gradient(circle at 40% 35%, #6db35a, #3d6b32);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(61, 107, 50, 0.4), inset 0 1px 2px rgba(255,255,255,0.2);
+}
+
+.death-save-failure {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #8B2500;
+  background: radial-gradient(circle at 40% 35%, #b33a1a, #7a2000);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(139, 37, 0, 0.4), inset 0 1px 2px rgba(255,255,255,0.15);
+}
+
+/* Delete/remove button */
+.parchment-remove-btn {
+  height: 28px;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8B2500;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.parchment-remove-btn:hover {
+  color: #A0522D;
+  background: rgba(139, 37, 0, 0.08);
+}
+
+/* Scrollbar styling for modals */
+.parchment-modal ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.parchment-modal ::-webkit-scrollbar-track {
+  background: rgba(237, 224, 200, 0.3);
+  border-radius: 4px;
+}
+
+.parchment-modal ::-webkit-scrollbar-thumb {
+  background: rgba(139, 105, 20, 0.3);
+  border-radius: 4px;
+}
+
+.parchment-modal ::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 105, 20, 0.5);
+}
+
+/* Small inline button inside modals */
+.parchment-btn-sm {
+  padding: 3px 10px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  font-family: Georgia, "Times New Roman", serif;
+  border: 1px solid rgba(139, 105, 20, 0.3);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  color: #3C2415;
+  background: transparent;
+}
+
+.parchment-btn-sm:hover {
+  background: rgba(139, 105, 20, 0.08);
+  border-color: rgba(139, 105, 20, 0.5);
+}
+
+/* Proficiency highlight */
+.parchment-prof {
+  background: rgba(201, 168, 76, 0.12);
+}
+
+.parchment-no-prof {
+  background: rgba(237, 224, 200, 0.4);
+}
+
+/* Level up modal filter buttons */
+.parchment-filter-active {
+  background: linear-gradient(180deg, #8B4513, #6B3A2A);
+  color: #FBF0DC;
+  border: 1px solid #C9A84C;
+  border-radius: 2px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-family: Georgia, "Times New Roman", serif;
+  cursor: pointer;
+}
+
+.parchment-filter-inactive {
+  background: transparent;
+  color: #3C2415;
+  border: 1px solid rgba(139, 105, 20, 0.3);
+  border-radius: 2px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-family: Georgia, "Times New Roman", serif;
+  cursor: pointer;
+}
+
+.parchment-filter-inactive:hover {
+  background: rgba(139, 105, 20, 0.08);
+  border-color: rgba(139, 105, 20, 0.5);
+}
+
+/* Template card */
+.parchment-template-card {
+  text-align: left;
+  padding: 12px;
+  border-radius: 4px;
+  border: 2px solid rgba(139, 105, 20, 0.3);
+  background: rgba(251, 240, 220, 0.5);
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.parchment-template-card:hover {
+  border-color: rgba(201, 168, 76, 0.6);
+  background: rgba(201, 168, 76, 0.08);
+}
+
+.parchment-template-card-selected {
+  border-color: #C9A84C;
+  background: rgba(201, 168, 76, 0.15);
+  box-shadow: 0 2px 10px rgba(201, 168, 76, 0.2);
+}
+
+/* Skill row highlight for expertise */
+.parchment-skill-expert {
+  background: rgba(92, 58, 110, 0.1);
+}
+
+.parchment-skill-prof {
+  background: rgba(201, 168, 76, 0.1);
+}
+
+/* Level +/- buttons */
+.parchment-level-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  border: 1px solid rgba(139, 105, 20, 0.3);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
+  background: transparent;
+  color: #3C2415;
+}
+
+.parchment-level-btn:hover {
+  border-color: #C9A84C;
+  background: rgba(201, 168, 76, 0.1);
+}
+
+.parchment-level-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Decorative divider */
+.ornamental-divider {
+  border: none;
+  border-top: 1px solid rgba(201, 168, 76, 0.4);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+  height: 3px;
+  margin: 8px 0;
+}
+
+/* Header buttons */
+.parchment-header-btn {
+  padding: 5px 12px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #D4A957;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.parchment-header-btn:hover {
+  background: rgba(201, 168, 76, 0.2);
+  border-color: rgba(201, 168, 76, 0.6);
+}
+
+/* Primary action in header */
+.parchment-header-btn-primary {
+  padding: 5px 12px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #FBF0DC;
+  background: linear-gradient(180deg, #8B4513, #6B3A2A);
+  border: 1px solid #C9A84C;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.parchment-header-btn-primary:hover {
+  background: linear-gradient(180deg, #A0522D, #8B4513);
+}
+
+/* ── Dice Roll Styles ── */
+
+/* Rollable badge — clickable modifier/saving throw */
+.roll-badge {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+
+.roll-badge:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 12px rgba(201, 168, 76, 0.4), inset 0 1px 2px rgba(255,255,255,0.15);
+}
+
+.roll-badge:active {
+  transform: scale(0.95);
+}
+
+/* Dice icon indicator on hover */
+.roll-badge::before {
+  content: '🎲';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 8px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  filter: grayscale(0.3);
+}
+
+.roll-badge:hover::before {
+  opacity: 1;
+}
+
+/* Roll result popup */
+.roll-result-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  z-index: 300;
+  background: rgba(245, 230, 200, 0.98);
+  border: 3px solid rgba(201, 168, 76, 0.6);
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(60, 36, 21, 0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+  outline: 2px solid rgba(139, 105, 20, 0.15);
+  outline-offset: -6px;
+  padding: 24px 36px;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  animation: rollPopupIn 0.25s ease-out forwards;
+  min-width: 200px;
+}
+
+@keyframes rollPopupIn {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+  60% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.roll-result-popup.closing {
+  animation: rollPopupOut 0.3s ease-in forwards;
+}
+
+@keyframes rollPopupOut {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+}
+
+.roll-result-die {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #3C2415;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(60, 36, 21, 0.2);
+}
+
+.roll-result-die.nat20 {
+  color: #4a7c3f;
+  text-shadow: 0 0 12px rgba(74, 124, 63, 0.4);
+}
+
+.roll-result-die.nat1 {
+  color: #8B2500;
+  text-shadow: 0 0 12px rgba(139, 37, 0, 0.3);
+}
+
+.roll-result-label {
+  font-size: 0.75rem;
+  color: #8B6914;
+  margin-bottom: 4px;
+  letter-spacing: 0.03em;
+}
+
+.roll-result-total {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #6B3A2A;
+  margin-top: 6px;
+  text-shadow: 0 1px 2px rgba(60, 36, 21, 0.2);
+  font-variant-numeric: tabular-nums;
+}
+
+.roll-result-breakdown {
+  font-size: 0.8rem;
+  color: #8B6914;
+  margin-top: 2px;
+}
+
+.roll-result-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.roll-result-tag.crit {
+  background: rgba(74, 124, 63, 0.15);
+  color: #4a7c3f;
+  border: 1px solid rgba(74, 124, 63, 0.3);
+}
+
+.roll-result-tag.fumble {
+  background: rgba(139, 37, 0, 0.1);
+  color: #8B2500;
+  border: 1px solid rgba(139, 37, 0, 0.25);
+}
+
+/* ── Grouped Toolbar & Actions ── */
+.parchment-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+  .parchment-toolbar {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .parchment-mobile-bar {
+    display: none !important;
+  }
+}
+
+.parchment-btn-group {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(30, 16, 10, 0.6);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  padding: 2px;
+  gap: 2px;
+}
+
+.parchment-btn-group .parchment-header-btn {
+  border: none;
+  background: transparent;
+  border-radius: 2px;
+  padding: 4px 10px;
+}
+
+.parchment-btn-group .parchment-header-btn:hover {
+  background: rgba(201, 168, 76, 0.2);
+}
+
+/* ── Mobile Action Drawer ── */
+.parchment-mobile-drawer {
+  background: #F5E6C8;
+  border: 2px solid #C9A84C;
+  color: #3D2012;
+  box-shadow: 0 10px 30px rgba(45, 24, 14, 0.5);
+  animation: parchmentSlideDown 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes parchmentSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── SEO FAQ Section ── */
+.parchment-faq-section {
+  margin-top: 48px;
+  margin-bottom: 24px;
+  background: rgba(245, 230, 200, 0.92);
+  border: 2px solid rgba(139, 105, 20, 0.4);
+  border-radius: 4px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(60, 36, 21, 0.25);
+}
+
+.parchment-faq-item {
+  border-bottom: 1px solid rgba(139, 105, 20, 0.2);
+  padding: 12px 0;
+}
+
+.parchment-faq-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.parchment-faq-item summary {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: #3C2415;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  user-select: none;
+}
+
+.parchment-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.parchment-faq-item summary::after {
+  content: '▸';
+  font-size: 1rem;
+  color: #8B6914;
+  transition: transform 0.2s;
+}
+
+.parchment-faq-item[open] summary::after {
+  transform: rotate(90deg);
+}
+
+.parchment-faq-item p {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: #4A3324;
+  margin-top: 8px;
+  padding-left: 4px;
+}
+
+.parchment-footer {
+  text-align: center;
+  padding: 20px 0 32px;
+  color: #8B6914;
+  font-size: 0.75rem;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.dnd-emoji {
+  display: inline-block;
+  vertical-align: -0.1em;
+  font-style: normal;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Header and Contextual Parchment Dropdown Menu */
+.parchment-menu-dropdown {
+  background: #F5E6C8;
+  border: 2px solid #C9A84C;
+  box-shadow: 0 10px 25px rgba(60, 36, 21, 0.4), inset 0 1px 0 rgba(255, 240, 200, 0.6);
+  border-radius: 4px;
+}
+
+/* Atmospheric Parchment Empty States */
+.parchment-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.25rem 1rem;
+  border-radius: 4px;
+  background: rgba(232, 211, 162, 0.25);
+  border: 1.5px dashed rgba(201, 168, 76, 0.5);
+  box-shadow: inset 0 1px 3px rgba(60, 36, 21, 0.06);
+  gap: 0.35rem;
+}
+
+
